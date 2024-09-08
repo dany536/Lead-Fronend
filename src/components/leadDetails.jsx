@@ -76,7 +76,7 @@ const LeadDetails = () => {
               <div className="grid gap-4 gap-y-2 text-sm grid-cols-1 md:grid-cols-5">
                 <div className="md:col-span-5">
                   <label>Assign To</label>
-                  <input value={lead.assignedTo} className="h-10 border mt-1 rounded px-4 w-full bg-gray-50" disabled />
+                  <input value={lead.assignedTo.name} className="h-10 border mt-1 rounded px-4 w-full bg-gray-50" disabled />
                 </div>
 
                 <div className="md:col-span-5">
