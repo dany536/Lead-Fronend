@@ -25,11 +25,11 @@ const EmployeeLeadList = () => {
 
   useEffect(() => {
     const Token = Cookies.get('accessToken');
-    if (!Token) {
-      navigate('/')
-    } else {
+    // if (!Token) {
+    //   navigate('/')
+    // } else {
       parseJwt(Token)
-    }
+    // }
   }, [Token]);
 
   function parseJwt(Token) {
