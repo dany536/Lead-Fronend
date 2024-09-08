@@ -22,13 +22,9 @@ const LeadList = () => {
 
   useEffect(() => {
     fetchLeads();
-    // const Token = Cookies.get('accessToken');
-    // if (!Token) {
-    //   navigate('/')
-    // } else {
-    //   const decoded = jwtDecode(Token);
-    //   setUsers(decoded.user)
-    // }
+    const Token = Cookies.get('accessToken');
+    const decoded = jwtDecode(Token);
+    setUsers(decoded.user)
   }, [Token]);
 
   const fetchLeads = async () => {

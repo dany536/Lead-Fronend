@@ -24,13 +24,9 @@ const EmployeeLeadList = () => {
 
   useEffect(() => {
     const Token = Cookies.get('accessToken');
-    if (!Token) {
-      navigate('/')
-    } else {
-      const decoded = jwtDecode(Token);
-      setUsers(decoded.user);
-      fetchLeads(decoded.user.id)
-    }
+    const decoded = jwtDecode(Token);
+    setUsers(decoded.user);
+    fetchLeads(decoded.user.id)
   }, [Token]);
 
   const fetchLeads = async (id) => {
@@ -61,7 +57,7 @@ const EmployeeLeadList = () => {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-4 md:gap-6 max-w-6xl mx-auto lg:pt-7">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 max-w-6xl mx-auto pt-7">
           <CardDataStats title="Total Leads" total={leads.length} >
             <svg
               className="fill-primary dark:fill-white"
