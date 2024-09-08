@@ -70,7 +70,7 @@ const LeadList = () => {
       <div className='bg-gray-300'>
         <Admin />
 
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-4 md:gap-6 max-w-6xl mx-auto lg:pt-7">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 max-w-6xl mx-auto pt-7 px-5">
           <CardDataStats title="Total Leads" total={leads.length} >
             <svg
               className="fill-primary dark:fill-white"
@@ -158,7 +158,7 @@ const LeadList = () => {
         </div>
 
         <section className="mx-auto w-full max-w-6xl px-4 py-4 md:mt-3">
-          <div className="flex flex-col space-y-4 md:flex-row md:items-center md:justify-between md:space-y-0">
+          <div className="flex space-y-4 flex-row md:items-center justify-between md:space-y-0">
             <div>
               <h2 className="text-2xl font-semibold">Lead Details</h2>
             </div>
