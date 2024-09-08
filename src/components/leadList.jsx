@@ -7,7 +7,7 @@ import CardDataStats from './CardDataStats';
 import Header from './header';
 import { jwtDecode } from "jwt-decode";
 import url from './url';
-import "core-js/stable/atob";
+//import "core-js/stable/atob";
 
 const API_BASE_URL = url;
 

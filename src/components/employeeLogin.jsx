@@ -7,7 +7,9 @@ import Header from './header';
 import Cookies from 'js-cookie';
 import { jwtDecode } from "jwt-decode";
 import url from './url';
-import "core-js/stable/atob";
+//import "core-js/stable/atob";
+import { decode } from "base-64";
+global.atob = decode;
 
 const API_BASE_URL = url;
 
