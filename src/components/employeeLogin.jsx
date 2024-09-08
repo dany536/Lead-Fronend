@@ -24,9 +24,13 @@ const EmployeeLeadList = () => {
 
   useEffect(() => {
     const Token = Cookies.get('accessToken');
-    const decoded = jwtDecode(Token);
-    setUsers(decoded.user);
-    fetchLeads(decoded.user.id)
+    if (!Token) {
+      navigate('/')
+    } else {
+      const decoded = jwtDecode(Token);
+      setUsers(decoded.user);
+      fetchLeads(decoded.user.id)
+    }
   }, [Token]);
 
   const fetchLeads = async (id) => {
