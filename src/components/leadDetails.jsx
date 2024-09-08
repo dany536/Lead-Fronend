@@ -100,7 +100,7 @@ const LeadDetails = () => {
                 </div>
 
                 <div className="md:col-span-5 text-right pt-2">
-                  <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"><Link to="/">Back</Link></button>
+                  <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"><Link to="/leadList">Back</Link></button>
                 </div>
 
               </div>

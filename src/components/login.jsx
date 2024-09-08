@@ -14,7 +14,6 @@ export default function login() {
 
   const handleSubmit = (e) => {
     e.preventDefault()
-    alert(" I am in")
     axios.post(`${url}/login`, {email, password})
       .then(res => {
         console.log(res.data.Role)

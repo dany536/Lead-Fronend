@@ -20,20 +20,8 @@ export default function header() {
                 <div className="inline-flex items-center space-x-2">
                     <span className="font-bold">Vero Estate</span>
                 </div>
-                <div className="hidden grow flex-col items-center text-center lg:flex">
+                <div className="grow flex-col items-center text-center flex">
                     <h1 className='text-3xl p-3'>LEAD MANAGEMENT SYSTEM</h1>
-                    {/* <ul className="inline-flex space-x-8">
-                        {menuItems.map((item) => (
-                            <li key={item.name}>
-                                <a
-                                    href={item.href}
-                                    className="inline-flex items-center text-xl font-semibold text-gray-800 hover:text-gray-900"
-                                >
-                                    {item.name}
-                                </a>
-                            </li>
-                        ))}
-                    </ul> */}
                 </div>
                 <div className="space-x-2">
                     <button
