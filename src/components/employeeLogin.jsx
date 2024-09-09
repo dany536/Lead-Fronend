@@ -16,26 +16,27 @@ const EmployeeLeadList = () => {
   const { id } = useParams();
   // const [employeeLeads, setEmployeeLeads] = useState([]);
   const [employee, setEmployee] = useState([]);
-
-  const [users, setUsers] = useState({
+    const [users, setUsers] = useState({
     name: "", id: ""
   });
   const navigate = useNavigate()
+  axios.defaults.withCredentials = true
+
 
   const Token = "";
 
   useEffect(() => {
     fetchLeads(id)
     fetchEmployee(id);
-    const Token = Cookies.get('accessToken');
-    if (!Token) {
-      navigate('/')
-    } else {
+    // const Token = Cookies.get('accessToken');
+    // if (!Token) {
+    //   navigate('/')
+    // } else {
       // const decoded = jwtDecode(Token);
       // setUsers(decoded.user);
       // fetchLeads(decoded.user.id)
 //      parseJwt(Token)
-    }
+    // }
   }, [id]);
 
   // const parseJwt = (token) => {
