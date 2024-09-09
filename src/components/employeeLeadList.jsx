@@ -7,6 +7,7 @@ import url from './url';
 
 import Cookies from 'js-cookie';
 import { jwtDecode } from "jwt-decode";
+axios.defaults.withCredentials = true
 
 const API_BASE_URL = url;
 
