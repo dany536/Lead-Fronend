@@ -76,11 +76,11 @@ const LeadDetails = () => {
               <div className="grid gap-4 gap-y-2 text-sm grid-cols-1 md:grid-cols-5">
                 <div className="md:col-span-5">
                   <label>Assign To</label>
-                  <input value={lead.assignedTo.name} className="h-10 border mt-1 rounded px-4 w-full bg-gray-50" disabled />
+                  <input value={lead.assignedTo ? lead.assignedTo.name : ""} className="h-10 border mt-1 rounded px-4 w-full bg-gray-50" disabled />
                 </div>
 
                 <div className="md:col-span-5">
-                  <label for="dateOfLead">Date of Assign</label>
+                  <label htmlFor="dateOfLead">Date of Assign</label>
                   <input value={formatDate(lead.lastAssignedDate)} className="h-10 border mt-1 rounded px-4 w-full bg-gray-50" disabled />
                 </div>
 
@@ -90,12 +90,12 @@ const LeadDetails = () => {
                 </div>
 
                 <div className="md:col-span-5">
-                  <label for="dateOfLead">Last Status Update</label>
+                  <label htmlFor="dateOfLead">Last Status Update</label>
                   <input value={formatDate(lead.lastStatusUpdate)} className="h-10 border mt-1 rounded px-4 w-full bg-gray-50" disabled />
                 </div>
 
                 <div className="md:col-span-5">
-                  <label for="data_source">Remarks</label>
+                  <label htmlFor="data_source">Remarks</label>
                   <textarea rows="4" value={lead.remark} className="border mt-1 rounded p-3 w-full bg-gray-50" disabled></textarea>
                 </div>
 
