@@ -13,8 +13,9 @@ const API_BASE_URL = url;
 
 const EmployeeLeadList = () => {
   const [leads, setLeads] = useState([]);
+  const { id } = useParams();
   // const [employeeLeads, setEmployeeLeads] = useState([]);
-  // const [employee, setEmployee] = useState([]);
+  const [employee, setEmployee] = useState([]);
 
   const [users, setUsers] = useState({
     name: "", id: ""
@@ -24,6 +25,8 @@ const EmployeeLeadList = () => {
   const Token = "";
 
   useEffect(() => {
+    fetchLeads(id)
+    fetchEmployee(id);
     const Token = Cookies.get('accessToken');
     if (!Token) {
       navigate('/')
@@ -31,24 +34,30 @@ const EmployeeLeadList = () => {
       // const decoded = jwtDecode(Token);
       // setUsers(decoded.user);
       // fetchLeads(decoded.user.id)
-      parseJwt(Token)
+//      parseJwt(Token)
     }
-  }, [Token]);
+  }, [id]);
 
-  const parseJwt = (token) => {
-    try {
-      const decoded = JSON.parse(atob(token.split('.')[1]));
-      setUsers(decoded.user);
-      fetchLeads(decoded.user.id)
-    } catch (e) {
-      return null;
-    }
-  };
+  // const parseJwt = (token) => {
+  //   try {
+  //     const decoded = JSON.parse(atob(token.split('.')[1]));
+  //     setUsers(decoded.user);
+  //     fetchLeads(decoded.user.id)
+  //   } catch (e) {
+  //     return null;
+  //   }
+  // };
 
   const fetchLeads = async (id) => {
     const res = await axios.get(`${API_BASE_URL}/leadsadmin/${id}`);
     setLeads(res.data);
   };
+
+  const fetchEmployee = async (id) => {
+    const res = await axios.get(`${API_BASE_URL}/employee/${id}`);
+    setEmployee(res.data);
+    console.log(res.data)
+};
 
   const formatDate = (dateString) => {
     return dateString ? new Date(dateString).toLocaleDateString() : 'N/A';
@@ -69,7 +78,7 @@ const EmployeeLeadList = () => {
             <h2 className="text-2xl font-semibold">Lead Details</h2>
           </div>
           <div>
-            <h2 className="text-xl font-semibold">Hi {users.name}!</h2>
+            <h2 className="text-xl font-semibold">Hi {employee.name}!</h2>
           </div>
         </div>
 

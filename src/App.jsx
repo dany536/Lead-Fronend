@@ -31,7 +31,9 @@ function App() {
             <Route path='/addEmployee' element={<Employee />} />
             <Route path='/employee/:id' element={<Employee />} />
             <Route path='/employeeList' element={<EmployeeList />} />
-            <Route path="/employeeLeadList" element={<EmployeeLogin />} />            
+            <Route path="/employeeLeadList" element={<EmployeeLogin />} />
+            <Route path="/employeeLogin/:id" element={<EmployeeLogin />} />
+
             <Route path="/employeeLeadList/:id" element={<EmployeeLeadList />} />
             <Route path="/employeeLeadUpdate/:id" element={<EmployeeLeadUpdate />} />
             <Route path="/employeeLeadDetails/:id" element={<EmployeeLeadDetails />} />
