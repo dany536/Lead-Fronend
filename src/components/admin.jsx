@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom'
 function admin() {
     return (
         <div className='shadow-md bg-white'>
-            <div className="pb-5 pt-2 flex flex-col space-y-4 md:flex-row md:items-center md:justify-between md:space-y-0  max-w-6xl mx-auto bg-">
+            <div className="pb-5 pt-2 flex space-y-4 flex-row items-center justify-between md:space-y-0  max-w-6xl mx-auto bg-">
                 <div>
                 </div>
                 <div>
