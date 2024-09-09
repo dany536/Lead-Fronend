@@ -15,6 +15,10 @@ const LeadForm = () => {
 
   }, []);
 
+  const handleChange = (e) => {
+    setLead({ ...lead, [e.target.name]: e.target.value });
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (id) {
@@ -23,7 +27,7 @@ const LeadForm = () => {
       await axios.post(`${API_BASE_URL}/addLead`, lead);
 
     }
-    navigate('/');
+    navigate('/leadList');
     console.log(lead);
 
   };
