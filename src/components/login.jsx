@@ -24,7 +24,7 @@ export default function login() {
         
        else if(res.data.Role === "Employee") {
           console.log(res.data.Message)
-          navigate('/EmployeeLeadList')
+          navigate(`/EmployeeLeadList/${res.data.Id}`)
         }
         
         else {
