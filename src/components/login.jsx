@@ -9,6 +9,7 @@ export default function login() {
   const [email, setEmail] = useState()
   const [password, setPassword] = useState()
   const navigate = useNavigate()
+  const [message, setMessage] = useState()
 
   axios.defaults.withCredentials = true
 
@@ -30,6 +31,7 @@ export default function login() {
         
         else {
           console.log(res.data.Message)
+          setMessage(res.data.Message)
           navigate('/')
         }
       })
@@ -84,6 +86,9 @@ export default function login() {
                   >
                     Create Account <ArrowRight className="ml-2" size={16} />
                   </button>
+                </div>
+                <div className='text-center text-black h-5'>
+                  <p>{message}</p>
                 </div>
               </div>
             </form>
