@@ -124,11 +124,16 @@ const EmployeeLeadUpdate = () => {
                                             <option value="No Update">No Update</option>
                                             <option value="Close">Close</option>
                                             <option value="In Follow Up">In Follow Up</option>
-                                            <option value="Call Cut">Donot Attend</option>
+                                            <option value="Did Not Answer">Did Not Answer</option>
                                             <option value="Not Interested">Not Interested</option>
                                             <option value="Switched Off">Switched Off</option>
                                             <option value="Broker">Broker</option>
                                             <option value="Invalid Number">Invalid Number</option>
+                                            <option value="Spam">Spam</option>
+                                            <option value="Incoming Not Available">Incoming Not Available</option>
+                                            <option value="Busy">Busy</option>
+                                            <option value="Call Cut">Call Cut</option>
+                                            <option value="Meeting Done">Meeting Done</option>
                                         </select>
                                     </div>
 
