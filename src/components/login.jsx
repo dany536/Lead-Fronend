@@ -9,26 +9,28 @@ export default function login() {
   const [email, setEmail] = useState()
   const [password, setPassword] = useState()
   const navigate = useNavigate()
+  const [message, setMessage] = useState()
 
   axios.defaults.withCredentials = true
 
   const handleSubmit = (e) => {
     e.preventDefault()
-    axios.post(`${url}/login`, {email, password})
+    axios.post(`${url}/login`, { email, password })
       .then(res => {
         console.log(res.data.Role)
-        if(res.data.Role === "Admin") {
+        if (res.data.Role === "Admin") {
           console.log(res.data.message)
           navigate('/leadList')
         }
-        
-       else if(res.data.Role === "Employee") {
+
+        else if (res.data.Role === "Employee") {
           console.log(res.data.Message)
           console.log(res.data.Id)
           navigate(`/employeeLogin/${res.data.Id}`)
         }
-        
+
         else {
+          setMessage(res.data.Message)
           console.log(res.data.Message)
           navigate('/')
         }
@@ -82,8 +84,11 @@ export default function login() {
                     type="submit"
                     className="inline-flex w-full items-center justify-center rounded-md bg-black px-3.5 py-2.5 font-semibold leading-7 text-white hover:bg-black/80"
                   >
-                    Create Account <ArrowRight className="ml-2" size={16} />
+                    Login <ArrowRight className="ml-2" size={16} />
                   </button>
+                </div>
+                <div className='text-center text-black h-5'>
+                  <p>{message}</p>
                 </div>
               </div>
             </form>
