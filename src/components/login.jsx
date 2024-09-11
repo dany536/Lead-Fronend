@@ -32,6 +32,7 @@ export default function login() {
         else {
           setMessage(res.data.Message)
           console.log(res.data.Message)
+          setMessage(res.data.Message)
           navigate('/')
         }
       })
