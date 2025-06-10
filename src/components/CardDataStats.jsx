@@ -5,14 +5,12 @@ const CardDataStats = ({
   total
 }) => {
   return (
-    <div className="rounded border border-stroke bg-white p-6 shadow-default dark:border-strokedark dark:bg-boxdark">
-      <div className="flex items-end justify-between">
-        <div>
-          <h3 className="text-xl font-bold text-left text-black dark:text-white">
-            {total}
-          </h3>
-          <span className="text-md font-medium">{title}</span>
-        </div>
+    <div className="rounded-xl border p-5 shadow-default text-center">
+      <div>
+        <h3 className="text-xl font-bold text-black">
+          {total}
+        </h3>
+        <span className="text-md font-medium">{title}</span>
       </div>
     </div>
   );

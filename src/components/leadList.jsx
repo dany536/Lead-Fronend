@@ -7,9 +7,12 @@ import CardDataStats from './CardDataStats';
 import Header from './header';
 import { jwtDecode } from "jwt-decode";
 import url from './url';
+// import Excelexport from './Excelexport.jsx';
 //import "core-js/stable/atob";
-
+import Chart from './chart';
 const API_BASE_URL = url;
+import { PieChart, pieArcLabelClasses } from '@mui/x-charts/PieChart';
+import EmployeeRank from './employeeRank';
 
 const LeadList = () => {
   const [leads, setLeads] = useState([]);
@@ -17,6 +20,7 @@ const LeadList = () => {
   const [users, setUsers] = useState({
     name: "", id: ""
   });
+  const [employee, setEmployee] = useState([]);
   const navigate = useNavigate()
   axios.defaults.withCredentials = true;
   const Token = '';
@@ -25,12 +29,17 @@ const LeadList = () => {
   const [closeSection, setCloseSection] = useState(false)
   const [followUpSection, setFollowUpSection] = useState(false)
   const [noUpdateSection, setNoUpdateSection] = useState(false)
+  const [didNotAnswerSection, setDidNotAnsswerSection] = useState(false)
+  const [meetingDoneSection, setMeetingDoneSection] = useState(false)
+
 
   const leadfn = () => {
     setLeadSection(true)
     setCloseSection(false)
     setFollowUpSection(false)
     setNoUpdateSection(false)
+    setDidNotAnsswerSection(false)
+    setMeetingDoneSection(false)
   }
 
   const closefn = () => {
@@ -38,6 +47,8 @@ const LeadList = () => {
     setCloseSection(true)
     setFollowUpSection(false)
     setNoUpdateSection(false)
+    setDidNotAnsswerSection(false)
+    setMeetingDoneSection(false)
   }
 
   const followUpfn = () => {
@@ -45,17 +56,40 @@ const LeadList = () => {
     setCloseSection(false)
     setFollowUpSection(true)
     setNoUpdateSection(false)
+    setDidNotAnsswerSection(false)
+    setMeetingDoneSection(false)
   }
 
   const noUpdatefn = () => {
     setLeadSection(false)
     setCloseSection(false)
     setFollowUpSection(false)
+    setMeetingDoneSection(false)
     setNoUpdateSection(true)
+    setDidNotAnsswerSection(false)
+  }
+
+  const didNotAnswerfn = () => {
+    setLeadSection(false)
+    setCloseSection(false)
+    setFollowUpSection(false)
+    setNoUpdateSection(false)
+    setMeetingDoneSection(false)
+    setDidNotAnsswerSection(true)
+  }
+
+  const meetingDonefn = () => {
+    setLeadSection(false)
+    setCloseSection(false)
+    setFollowUpSection(false)
+    setNoUpdateSection(false)
+    setDidNotAnsswerSection(false)
+    setMeetingDoneSection(true)
   }
 
   useEffect(() => {
     fetchLeads();
+    fetchEmployee();
     const Token = Cookies.get('accessToken');
     // if (!Token) {
     //   navigate('/')
@@ -71,21 +105,17 @@ const LeadList = () => {
     setRecords(res.data);
   };
 
-  const Filter = (event) => {
-    setRecords(leads.filter(f => f.name.toLowerCase().includes(event.target.value)))
-  }
-
-  const FilterStatus = (event) => {
-    setRecords(leads.filter(f => f.status.includes(event.target.value)))
-  }
-
+  const fetchEmployee = async () => {
+    axios.get(`${API_BASE_URL}/employees`)
+      .then(res => setEmployee(res.data))
+      .catch(err => console.log(err))
+  };
 
   const deleteLead = async (id) => {
     if (confirm("Are you sure want to delete lead ?") == true) {
       await axios.delete(`${API_BASE_URL}/lead/${id}`);
       fetchLeads();
     }
-
   };
 
   const formatDate = (dateString) => {
@@ -93,19 +123,99 @@ const LeadList = () => {
   };
 
   // to check no of leads
-  const closeLead = records.filter(({ status }) => status == "Close");
-  const inFollowUpLead = records.filter(({ status }) => status == "In Follow Up");
-  const noUpdateLead = records.filter(({ status }) => status == "No Update");
+  const closeLead = leads.filter(({ status }) => status == "Close");
+  const inFollowUpLead = leads.filter(({ status }) => status == "In Follow Up");
+  const noUpdateLead = leads.filter(({ status }) => status == "No Update");
+  const didNotAnswerLead = leads.filter(({ status }) => status == "Did Not Answer");
+  const notInterestedLead = leads.filter(({ status }) => status == "Not Interested");
+  const switchedOffLead = leads.filter(({ status }) => status == "Switched Off");
+  const busyLead = leads.filter(({ status }) => status == "Busy");
+  const callCutLead = leads.filter(({ status }) => status == "Call Cut");
+  const meetingDoneLead = leads.filter(({ status }) => status == "Meeting Done");
+  const futureProspectLead = leads.filter(({ status }) => status == "Future Prospect");
+
+  const data = [
+    { label: 'Switched Off', value: switchedOffLead.length, color: '#0088FE' },
+    { label: 'Busy', value: busyLead.length, color: '#C0DE00' },
+    { label: 'Call Cut', value: callCutLead.length, color: '#FF42D9' },
+    { label: 'No Update', value: noUpdateLead.length, color: '#35B627' },
+    { label: 'Did Not Answer', value: didNotAnswerLead.length, color: '#F12648' },
+    { label: 'Not Interested', value: notInterestedLead.length, color: '#FFBB28' },
+    { label: 'Meeting Done', value: meetingDoneLead.length, color: '#E63B2E' },
+    { label: 'Future Prospect', value: futureProspectLead.length, color: '#FF8042' },
+    { label: 'Close', value: closeLead.length, color: '#8400FF' },
+    { label: 'In Follow Up', value: inFollowUpLead.length, color: '#00C49F' },
+  ];
+
+  const sizing = {
+    margin: { right: 5 },
+    width: 400,
+    height: 400,
+    legend: { hidden: true },
+  };
+  const TOTAL = data.map((item) => item.value).reduce((a, b) => a + b, 0);
+
+  const getArcLabel = (params) => {
+    const percent = params.value / TOTAL;
+    return `${(percent * 100).toFixed(0)}%`;
+  };
+
+
+  function filler(data) {
+    const deep = data.target.value
+    setRecords(leads.filter((lead) => {
+      return deep.toLowerCase() === ''
+        ? lead
+        : lead.name.toLowerCase().includes(data.target.value);
+    }))
+  }
+
+  function statusFilter(data) {
+    const deep = data.target.value
+    setRecords(leads.filter((lead) => {
+      return deep === ''
+        ? lead
+        : lead.status.includes(data.target.value);
+    }))
+  }
+
+  function lastUpdateFilter(data) {
+    console.log(data);
+    const deep = data.target.value
+    setRecords(leads.filter((lead) => {
+      return deep.toLowerCase() === ''
+        ? lead
+        : lead.lastStatusUpdate.toLowerCase().includes(data.target.value);
+    }))
+  }
+
+  function handleChange(data) {
+    const deep = data.target.value
+    console.log(deep)
+
+
+    setRecords(leads.filter((lead) => {
+      return deep === ''
+        ? lead
+        : lead.assignedTo.filter((employee) => employee._id.includes(data.target.value));
+    }))
+  }
+
+  const statusColors = {
+    'Not Interested': 'bg-red-100 text-red-700',
+    'Call Cut': 'text-yellow-700',
+    'Broker': 'text-purple-700',
+  };
 
   return (
     <>
       <Header />
-      <div className='bg-gray-300'>
+      <div className='min-h-screen bg-gradient-to-tr from-blue-100 via-white to-green-100 p-4'>
         <Admin />
 
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 max-w-6xl mx-auto pt-7 px-5">
-          <button onClick={leadfn}>
-            <CardDataStats title="Total Leads" total={leads.length} >
+        <div className="grid grid-cols-2 md:grid-cols-6 gap-4 md:gap-4 max-w-7xl mx-auto pt-7 px-5">
+          <button onClick={leadfn} className='bg-gradient-to-r from-white to-blue-400 rounded-xl'>
+            <CardDataStats title="Total Leads" total={leads.length}>
               <svg
                 className="fill-primary dark:fill-white"
                 width="22"
@@ -126,8 +236,8 @@ const LeadList = () => {
             </CardDataStats>
           </button>
 
-          <button onClick={closefn}>
-            <CardDataStats title="Leads Close" total={closeLead.length} >
+          <button onClick={closefn} className='bg-gradient-to-r from-white to-red-400 rounded-xl'>
+            <CardDataStats title="Leads Closed" total={closeLead.length} >
               <svg
                 className="fill-primary dark:fill-white"
                 width="22"
@@ -148,8 +258,52 @@ const LeadList = () => {
             </CardDataStats>
           </button>
 
-          <button onClick={followUpfn}>
-            <CardDataStats title="Leads In Follow Up" total={inFollowUpLead.length}>
+          <button onClick={meetingDonefn} className='bg-gradient-to-r from-white to-green-400 rounded-xl'>
+            <CardDataStats title="Meeting Done" total={meetingDoneLead.length} >
+              <svg
+                className="fill-primary dark:fill-white"
+                width="22"
+                height="16"
+                viewBox="0 0 22 16"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M11 15.1156C4.19376 15.1156 0.825012 8.61876 0.687512 8.34376C0.584387 8.13751 0.584387 7.86251 0.687512 7.65626C0.825012 7.38126 4.19376 0.918762 11 0.918762C17.8063 0.918762 21.175 7.38126 21.3125 7.65626C21.4156 7.86251 21.4156 8.13751 21.3125 8.34376C21.175 8.61876 17.8063 15.1156 11 15.1156ZM2.26876 8.00001C3.02501 9.27189 5.98126 13.5688 11 13.5688C16.0188 13.5688 18.975 9.27189 19.7313 8.00001C18.975 6.72814 16.0188 2.43126 11 2.43126C5.98126 2.43126 3.02501 6.72814 2.26876 8.00001Z"
+                  fill=""
+                />
+                <path
+                  d="M11 10.9219C9.38438 10.9219 8.07812 9.61562 8.07812 8C8.07812 6.38438 9.38438 5.07812 11 5.07812C12.6156 5.07812 13.9219 6.38438 13.9219 8C13.9219 9.61562 12.6156 10.9219 11 10.9219ZM11 6.625C10.2437 6.625 9.625 7.24375 9.625 8C9.625 8.75625 10.2437 9.375 11 9.375C11.7563 9.375 12.375 8.75625 12.375 8C12.375 7.24375 11.7563 6.625 11 6.625Z"
+                  fill=""
+                />
+              </svg>
+            </CardDataStats>
+          </button>
+
+          <button onClick={didNotAnswerfn} className='bg-gradient-to-r from-white to-yellow-400 rounded-xl'>
+            <CardDataStats title="Did Not Answer" total={didNotAnswerLead.length} >
+              <svg
+                className="fill-primary dark:fill-white"
+                width="22"
+                height="16"
+                viewBox="0 0 22 16"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M11 15.1156C4.19376 15.1156 0.825012 8.61876 0.687512 8.34376C0.584387 8.13751 0.584387 7.86251 0.687512 7.65626C0.825012 7.38126 4.19376 0.918762 11 0.918762C17.8063 0.918762 21.175 7.38126 21.3125 7.65626C21.4156 7.86251 21.4156 8.13751 21.3125 8.34376C21.175 8.61876 17.8063 15.1156 11 15.1156ZM2.26876 8.00001C3.02501 9.27189 5.98126 13.5688 11 13.5688C16.0188 13.5688 18.975 9.27189 19.7313 8.00001C18.975 6.72814 16.0188 2.43126 11 2.43126C5.98126 2.43126 3.02501 6.72814 2.26876 8.00001Z"
+                  fill=""
+                />
+                <path
+                  d="M11 10.9219C9.38438 10.9219 8.07812 9.61562 8.07812 8C8.07812 6.38438 9.38438 5.07812 11 5.07812C12.6156 5.07812 13.9219 6.38438 13.9219 8C13.9219 9.61562 12.6156 10.9219 11 10.9219ZM11 6.625C10.2437 6.625 9.625 7.24375 9.625 8C9.625 8.75625 10.2437 9.375 11 9.375C11.7563 9.375 12.375 8.75625 12.375 8C12.375 7.24375 11.7563 6.625 11 6.625Z"
+                  fill=""
+                />
+              </svg>
+            </CardDataStats>
+          </button>
+
+          <button onClick={followUpfn} className='bg-gradient-to-r from-white to-indigo-400 rounded-xl'>
+            <CardDataStats title="In Follow Up" total={inFollowUpLead.length}>
               <svg
                 className="fill-primary dark:fill-white"
                 width="22"
@@ -170,8 +324,8 @@ const LeadList = () => {
             </CardDataStats>
           </button>
 
-          <button onClick={noUpdatefn}>
-            <CardDataStats title="Leads with No Update" total={noUpdateLead.length}>
+          <button onClick={noUpdatefn} className='bg-gradient-to-r from-white to-gray-400 rounded-xl'>
+            <CardDataStats title="No Update" total={noUpdateLead.length}>
               <svg
                 className="fill-primary dark:fill-white"
                 width="22"
@@ -197,7 +351,41 @@ const LeadList = () => {
           </button>
         </div>
 
-        <section className="mx-auto w-full max-w-6xl px-4 py-4 md:mt-3">
+        {/* <div className="grid md:grid-cols-3 justify-evenly max-w-7xl mx-auto pt-5 content-around">
+
+          <div>
+            <h2 className="text-2xl font-semibold text-center">Total Leads</h2>
+            <PieChart
+              series={[
+                {
+                  outerRadius: 190,
+                  data,
+                  arcLabel: getArcLabel,
+                },
+              ]}
+              sx={{
+                [`& .${pieArcLabelClasses.root}`]: {
+                  fill: 'white',
+                  fontSize: 14,
+                },
+              }}
+              {...sizing}
+            />
+          </div>
+
+          <div>
+            <h2 className="text-2xl font-semibold text-center">Total In-FollowUp Leads</h2>
+            <Chart />
+          </div>
+
+          <div>
+            <h2 className="text-2xl font-semibold text-center">Employee Rank</h2>
+            <EmployeeRank />
+          </div>
+
+        </div> */}
+
+        <section className="mx-auto w-full max-w-7xl px-4 py-4 md:mt-3">
           <div className="flex space-y-4 flex-row md:items-center justify-between md:space-y-0">
             <div>
               <h2 className="text-2xl font-semibold">Lead Details</h2>
@@ -210,67 +398,71 @@ const LeadList = () => {
                 Add New Lead
               </Link>
             </div>
+            {/* <div>
+              <Excelexport excelData={leads} fileName={"Excel Export"} />
+            </div> */}
           </div>
 
           <div className="mt-6 flex flex-col">
             <div className="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
-              <div className="inline-block min-w-full py-2 align-middle md:px-6 lg:px-8">
-                <div className="overflow-hidden border border-gray-200 md:rounded-lg">
-                  <table className="min-w-full divide-y divide-gray-200">
-                    <thead className="bg-gray-50">
+              <div className="inline-block min-w-full py-2 align-middle md:px-6 lg:px-8 ">
+
+                <div className="overflow-hidden border border-gray-200 md:rounded-lg ">
+                  <table className="min-w-full table-fixed divide-y divide-gray-200">
+                    <thead className="bg-gradient-to-r from-blue-400 to-indigo-400 text-white">
                       <tr>
                         <th
-                          scope="col"
-                          className="px-4 py-3.5 text-sm font-normal text-gray-700"
+                          scope="col-1"
+                          className="px-4 py-3.5 text-sm font-normal"
                         >
                           <span>S. NO.</span>
                         </th>
 
                         <th
-                          scope="col"
-                          className="px-4 py-3.5 text-sm font-normal text-gray-700"
+                          scope="col-1"
+                          className="px-4 py-3.5 text-sm font-normal"
                         >
                           <span>Source</span>
                         </th>
 
                         <th
                           scope="col"
-                          className="px-4 py-3.5 text-sm font-normal text-gray-700"
+                          className="px-4 py-3.5 text-sm font-normal"
                         >
                           <span>Client Name</span>
 
                         </th>
                         <th
                           scope="col"
-                          className="px-4 py-3.5 text-sm font-normal text-gray-700"
+                          className="px-4 py-3.5 text-sm font-normal"
                         >
                           <span>Assign To</span>
                         </th>
 
                         <th
                           scope="col"
-                          className="px-4 py-3.5 text-sm font-normal text-gray-700"
+                          className="px-4 py-3.5 text-sm font-normal"
                         >
                           <span>Date of Assign</span>
                         </th>
 
                         <th
                           scope="col"
-                          className="px-4 py-3.5 text-sm font-normal text-gray-700"
+                          className="px-4 py-3.5 text-sm font-normal"
                         >
                           Status
                         </th>
 
                         <th
                           scope="col"
-                          className="px-4 py-3.5 text-sm font-normal text-gray-700"
+                          className="px-4 py-3.5 text-sm font-normal"
                         >
                           Last Status Update
                         </th>
 
                         <th
                           scope="col"
-                          className="px-x py-3.5 text-sm font-normal text-gray-700"
+                          className="px-x py-3.5 text-sm font-normal"
                         >
                           Manage Leads
                         </th>
@@ -280,8 +472,72 @@ const LeadList = () => {
                     {
                       leadSection ?
                         <tbody className="divide-y divide-gray-200 bg-white text-center ">
+                          <tr>
+                            <td className="whitespace-nowrap">
+
+                            </td>
+                            <td className="whitespace-nowrap">
+
+                            </td>
+                            <td className="whitespace-nowrap">
+                              <form>
+                                <input className='form-control text-center text-sm p-1 border' placeholder='search name' onChange={filler} />
+                              </form>
+                            </td>
+                            <td className="whitespace-nowrap">
+
+                            </td>
+                            <td className="whitespace-nowrap">
+                              {/* <select
+                                name="assignedTo"
+                                onChange={handleChange}
+                                id="assignedTo" className="border p-1 w-full"
+                              >
+                                <option>Select One</option>
+                                {
+                                  employee.map((employee) => (
+                                    <option key={employee._id} value={employee._id}>{employee.name}</option>
+                                  ))
+                                }
+                              </select> */}
+                            </td>
+                            <td className="whitespace-nowrap">
+                              <form>
+                                <select
+                                  name="status"
+                                  onChange={statusFilter}
+                                  id="status" className="text-sm p-1 text-center border w-full"
+                                >
+                                  <option>Option</option>
+                                  <option value="No Update">No Update</option>
+                                  <option value="Close">Close</option>
+                                  <option value="In Follow Up">In Follow Up</option>
+                                  <option value="Did Not Answer">Did Not Answer</option>
+                                  <option value="Not Interested">Not Interested</option>
+                                  <option value="Switched Off">Switched Off</option>
+                                  <option value="Broker">Broker</option>
+                                  <option value="Invalid Number">Invalid Number</option>
+                                  <option value="Spam">Spam</option>
+                                  <option value="Incoming Not Available">Incoming Not Available</option>
+                                  <option value="Busy">Busy</option>
+                                  <option value="Call Cut">Call Cut</option>
+                                  <option value="Meeting Done">Meeting Done</option>
+                                  <option value="Future Prospect">Future Prospect</option>
+                                </select>
+                              </form>
+                            </td>
+                            <td className="whitespace-nowrap">
+                              <form>
+                                <input type='date' className='form-control text-center text-sm p-1 border' onChange={lastUpdateFilter} />
+                              </form>
+                            </td>
+                            <td className="whitespace-nowrap">
+
+                            </td>
+
+                          </tr>
                           {records.map((lead, index) => (
-                            <tr key={lead._id}>
+                            <tr key={lead._id} className={`${statusColors[lead.status] || 'bg-white'}`}>
                               <td className="whitespace-nowrap px-4 py-4">
                                 <div className="text-sm font-medium text-gray-900">{index + 1}</div>
                               </td>
@@ -302,7 +558,7 @@ const LeadList = () => {
                                 <div className="text-sm text-gray-900 ">{formatDate(lead.lastAssignedDate)}</div>
                               </td>
 
-                              <td className="whitespace-nowrap px-4 py-4 text-sm">
+                              <td className={`whitespace-nowrap px-4 py-4 text-sm font-medium ${statusColors[lead.status] || 'text-gray-700'}`}>
                                 {lead.status}
                               </td>
 
@@ -434,6 +690,108 @@ const LeadList = () => {
                       noUpdateSection ?
                         <tbody className="divide-y divide-gray-200 bg-white text-center ">
                           {noUpdateLead.map((lead, index) => (
+                            <tr key={lead._id}>
+                              <td className="whitespace-nowrap px-4 py-4">
+                                <div className="text-sm font-medium text-gray-900">{index + 1}</div>
+                              </td>
+
+                              <td className="whitespace-nowrap px-4 py-4">
+                                <div className="text-sm font-medium text-gray-900">{lead.data_source}</div>
+                              </td>
+
+                              <td className="whitespace-nowrap px-4 py-4">
+                                <div className="text-sm font-medium text-gray-900">{lead.name}</div>
+                              </td>
+
+                              <td className="whitespace-nowrap px-4 py-4 text-sm">
+                                {lead.assignedTo ? lead.assignedTo.name : 'Not Assign'}
+                              </td>
+
+                              <td className="whitespace-nowrap px-4 py-4">
+                                <div className="text-sm text-gray-900 ">{formatDate(lead.lastAssignedDate)}</div>
+                              </td>
+
+                              <td className="whitespace-nowrap px-4 py-4 text-sm">
+                                {lead.status}
+                              </td>
+
+                              <td className="whitespace-nowrap px-4 py-4">
+                                <div className="text-sm text-gray-900 ">{formatDate(lead.lastStatusUpdate)}</div>
+                              </td>
+
+                              <td className="whitespace-nowrap flex gap-1 px-4 py-4 text-sm text-gray-700 place-content-center">
+                                <div className="text-sm text-gray-900 rounded-full bg-green-400 px-4 py-1">
+                                  <Link to={`/leadDetails/${lead._id}`}>View</Link>
+                                </div>
+                                <div className="text-sm text-white rounded-full bg-orange-500 px-4 py-1">
+                                  <Link to={`/leadUpdate/${lead._id}`}>Update</Link>
+                                </div>
+                                <div className="text-sm text-white rounded-full bg-red-600 px-4 py-1">
+                                  <button onClick={() => deleteLead(lead._id)}>Delete</button>
+                                </div>
+                              </td>
+
+                            </tr>
+                          ))}
+                        </tbody>
+                        : null
+                    }
+
+                    {
+                      didNotAnswerSection ?
+                        <tbody className="divide-y divide-gray-200 bg-white text-center ">
+                          {didNotAnswerLead.map((lead, index) => (
+                            <tr key={lead._id}>
+                              <td className="whitespace-nowrap px-4 py-4">
+                                <div className="text-sm font-medium text-gray-900">{index + 1}</div>
+                              </td>
+
+                              <td className="whitespace-nowrap px-4 py-4">
+                                <div className="text-sm font-medium text-gray-900">{lead.data_source}</div>
+                              </td>
+
+                              <td className="whitespace-nowrap px-4 py-4">
+                                <div className="text-sm font-medium text-gray-900">{lead.name}</div>
+                              </td>
+
+                              <td className="whitespace-nowrap px-4 py-4 text-sm">
+                                {lead.assignedTo ? lead.assignedTo.name : 'Not Assign'}
+                              </td>
+
+                              <td className="whitespace-nowrap px-4 py-4">
+                                <div className="text-sm text-gray-900 ">{formatDate(lead.lastAssignedDate)}</div>
+                              </td>
+
+                              <td className="whitespace-nowrap px-4 py-4 text-sm">
+                                {lead.status}
+                              </td>
+
+                              <td className="whitespace-nowrap px-4 py-4">
+                                <div className="text-sm text-gray-900 ">{formatDate(lead.lastStatusUpdate)}</div>
+                              </td>
+
+                              <td className="whitespace-nowrap flex gap-1 px-4 py-4 text-sm text-gray-700 place-content-center">
+                                <div className="text-sm text-gray-900 rounded-full bg-green-400 px-4 py-1">
+                                  <Link to={`/leadDetails/${lead._id}`}>View</Link>
+                                </div>
+                                <div className="text-sm text-white rounded-full bg-orange-500 px-4 py-1">
+                                  <Link to={`/leadUpdate/${lead._id}`}>Update</Link>
+                                </div>
+                                <div className="text-sm text-white rounded-full bg-red-600 px-4 py-1">
+                                  <button onClick={() => deleteLead(lead._id)}>Delete</button>
+                                </div>
+                              </td>
+
+                            </tr>
+                          ))}
+                        </tbody>
+                        : null
+                    }
+
+                    {
+                      meetingDoneSection ?
+                        <tbody className="divide-y divide-gray-200 bg-white text-center ">
+                          {meetingDoneLead.map((lead, index) => (
                             <tr key={lead._id}>
                               <td className="whitespace-nowrap px-4 py-4">
                                 <div className="text-sm font-medium text-gray-900">{index + 1}</div>

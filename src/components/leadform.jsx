@@ -9,11 +9,19 @@ const API_BASE_URL = url;
 
 const LeadForm = () => {
   const [lead, setLead] = useState([]);
+  const [message, setMessage] = useState();
+  const [employee, setEmployee] = useState([]);
   const navigate = useNavigate();
   const { id } = useParams();
   useEffect(() => {
-
+    fetchEmployee();
   }, []);
+
+  const fetchEmployee = async () => {
+    axios.get(`${API_BASE_URL}/employees`)
+      .then(res => setEmployee(res.data))
+      .catch(err => console.log(err))
+  };
 
   const handleChange = (e) => {
     setLead({ ...lead, [e.target.name]: e.target.value });
@@ -25,6 +33,11 @@ const LeadForm = () => {
       await axios.put(`${API_BASE_URL}/lead/${id}`, lead);
     } else {
       await axios.post(`${API_BASE_URL}/addLead`, lead);
+      // .then(res => {
+      //   setMessage(res.data.Message)
+      // })
+      // .catch(err => console.log(err)
+      // )
 
     }
     navigate('/leadList');
@@ -33,6 +46,10 @@ const LeadForm = () => {
   };
 
   const today = new Date().toISOString().split('T')[0];
+
+  const formatDate = (dateString) => {
+    return dateString ? new Date(dateString).toISOString().split('T')[0] : 'N/A';
+  };
 
   return (
     <>
@@ -82,6 +99,30 @@ const LeadForm = () => {
                           <input type="date" name="dateOfLead" onChange={handleChange} id="dateOfLead" class="h-10 border mt-1 rounded px-4 w-full bg-gray-50" required />
                         </div>
 
+                        <div className="md:col-span-5">
+                          <label htmlFor="assignedTo">New Assign To</label>
+                          <select
+                            name="assignedTo"
+                            value={lead.assignedTo ? lead.assignedTo.name : '--'}
+                            onChange={handleChange}
+                            id="assignedTo" className="h-10 border mt-1 rounded p-2 w-full bg-gray-50"
+                          >
+                            <option>Select One</option>
+                            {
+                              employee.map((employee) => (
+                                <option key={employee._id} value={employee._id}>{employee.name}</option>
+                              ))
+                            }
+                          </select>
+                          {/* <input type="text" name="assignedTo" value={lead.assignedTo ? lead.assignedTo.name : ''} onChange={handleChange} id="assignedTo" className="h-10 border mt-1 rounded px-4 w-full bg-gray-50" /> */}
+                        </div>
+
+                        <div className="md:col-span-5">
+                          <label htmlFor="lastAssignedDate">Date of Assign</label>
+                          <input type="date" name="lastAssignedDate" value={formatDate(lead.lastAssignedDate)} onChange={handleChange} id="lastAssignedDate" className="h-10 border mt-1 rounded px-4 w-full bg-gray-50" />
+                        </div>
+
+
                         <div class="md:col-span-5 text-right pt-2">
                           <div class="inline-flex items-end gap-2">
                             <button onClick={() => navigate(-1)} className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Back</button>
@@ -91,6 +132,9 @@ const LeadForm = () => {
 
                       </div>
                     </div>
+                  </div>
+                  <div className='text-center text-black h-5'>
+                    <p>{message}</p>
                   </div>
                 </div>
               </div>

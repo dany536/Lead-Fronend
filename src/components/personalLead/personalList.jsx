@@ -1,23 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Link, useNavigate, useParams } from 'react-router-dom';
-import CardDataStats from './CardDataStats';
-import Header from './header';
-import url from './url';
+import CardDataStats from '../CardDataStats';
+import Header from '../header';
 
-import Cookies from 'js-cookie';
-import { jwtDecode } from "jwt-decode";
-axios.defaults.withCredentials = true
+import url from '../url';
 
 const API_BASE_URL = url;
 
-const EmployeeLeadList = () => {
+const PersonalList = () => {
   const [leads, setLeads] = useState([]);
   const [records, setRecords] = useState([]);
-  const [employeeLeads, setEmployeeLeads] = useState([]);
-  const [employee, setEmployee] = useState([]);
-
   const { id } = useParams();
+  const [employee, setEmployee] = useState([]);
   const navigate = useNavigate()
 
   const [leadSection, setLeadSection] = useState(true)
@@ -26,6 +21,7 @@ const EmployeeLeadList = () => {
   const [noUpdateSection, setNoUpdateSection] = useState(false)
   const [didNotAnswerSection, setDidNotAnsswerSection] = useState(false)
   const [meetingDoneSection, setMeetingDoneSection] = useState(false)
+
 
   const leadfn = () => {
     setLeadSection(true)
@@ -81,20 +77,15 @@ const EmployeeLeadList = () => {
     setMeetingDoneSection(true)
   }
 
-  useEffect(() => {
-    if (id) {
-      fetchLeads(id);
-      fetchEmployee(id);
+  axios.defaults.withCredentials = true
 
-    }
-    // const Token = Cookies.get('accessToken');
-    // if (!Token) {
-    //   navigate('/')
-    // }
+  useEffect(() => {
+    fetchLeads(id)
+    fetchEmployee(id);
   }, [id]);
 
   const fetchLeads = async (id) => {
-    const res = await axios.get(`${API_BASE_URL}/leadsadmin/${id}`);
+    const res = await axios.get(`${API_BASE_URL}/personalLeads/${id}`);
     setLeads(res.data);
     setRecords(res.data);
   };
@@ -102,15 +93,20 @@ const EmployeeLeadList = () => {
   const fetchEmployee = async (id) => {
     const res = await axios.get(`${API_BASE_URL}/employee/${id}`);
     setEmployee(res.data);
-    console.log(res.data)
   };
 
+  const deleteLead = async (lid) => {
+    if (confirm("Are you sure want to delete lead ?") == true) {
+      await axios.delete(`${API_BASE_URL}/personalLead/${lid}`);
+      fetchLeads(id)
+    }
+  };
 
   const formatDate = (dateString) => {
     return dateString ? new Date(dateString).toLocaleDateString() : 'N/A';
   };
 
-  const closeLead = leads.filter(({ status }) => status == "Close");
+  const closeLead = records.filter(({ status }) => status == "Close");
   const inFollowUpLead = leads.filter(({ status }) => status == "In Follow Up");
   const noUpdateLead = leads.filter(({ status }) => status == "No Update");
   const didNotAnswerLead = leads.filter(({ status }) => status == "Did Not Answer");
@@ -143,29 +139,33 @@ const EmployeeLeadList = () => {
     }))
   }
 
-  // function lastUpdateFilter(data) {
-  //   console.log(data);
-  //   const deep = data.target.value
-  //   setRecords(leads.filter((lead) => {
-  //     return deep.toLowerCase() === ''
-  //       ? lead
-  //       : lead.lastStatusUpdate.toLowerCase().includes(data.target.value);
-  //   }))
-  // }
-
-
   return (
     <>
       <Header />
 
       <div className='bg-gray-300 min-h-screen'>
         <section className="mx-auto w-full max-w-7xl px-4 py-4 md:mt-3">
-          <div className="flex flex-col space-y-4 md:flex-row md:items-center md:justify-between md:space-y-0">
+          <div className="flex space-y-2 flex-row items-center justify-between md:space-y-0">
             <div>
               <h2 className="text-2xl font-semibold">Lead Details</h2>
             </div>
-            <div>
-              <h2 className="text-xl font-semibold">Hi {employee.name}</h2>
+            <div className='flex flex-row gap-5'>
+              <h2 className="text-xl font-semibold">Hi {employee.name}!</h2>
+            </div>
+
+            <div className='flex flex-row gap-2'>
+              <Link
+                type="button" to={`/employeeLogin/${employee._id}`}
+                className="rounded-md bg-black px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-black/80 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-black"
+              >
+                Switch to Official
+              </Link>
+              <Link
+                type="button" to={`/addPLead/${employee._id}`}
+                className="rounded-md bg-black px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-black/80 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-black"
+              >
+                Add Lead
+              </Link>
             </div>
           </div>
 
@@ -191,6 +191,7 @@ const EmployeeLeadList = () => {
                 </svg>
               </CardDataStats>
             </button>
+
             <button onClick={closefn}>
               <CardDataStats title="Leads Closed" total={closeLead.length} >
                 <svg
@@ -212,6 +213,7 @@ const EmployeeLeadList = () => {
                 </svg>
               </CardDataStats>
             </button>
+
             <button onClick={meetingDonefn}>
               <CardDataStats title="Meeting Done" total={meetingDoneLead.length} >
                 <svg
@@ -233,6 +235,7 @@ const EmployeeLeadList = () => {
                 </svg>
               </CardDataStats>
             </button>
+
             <button onClick={didNotAnswerfn}>
               <CardDataStats title="Did Not Answer" total={didNotAnswerLead.length} >
                 <svg
@@ -256,7 +259,7 @@ const EmployeeLeadList = () => {
             </button>
 
             <button onClick={followUpfn}>
-              <CardDataStats title="Leads In Follow Up" total={inFollowUpLead.length}>
+              <CardDataStats title="In Follow Up" total={inFollowUpLead.length}>
                 <svg
                   className="fill-primary dark:fill-white"
                   width="22"
@@ -302,7 +305,6 @@ const EmployeeLeadList = () => {
                 </svg>
               </CardDataStats>
             </button>
-
           </div>
 
           <div className="mt-6 flex flex-col">
@@ -337,13 +339,6 @@ const EmployeeLeadList = () => {
                           scope="col"
                           className="px-4 py-3.5 text-sm font-normal text-gray-700"
                         >
-                          <span>Date of Assign</span>
-                        </th>
-
-                        <th
-                          scope="col"
-                          className="px-4 py-3.5 text-sm font-normal text-gray-700"
-                        >
                           Status
                         </th>
 
@@ -356,7 +351,7 @@ const EmployeeLeadList = () => {
 
                         <th
                           scope="col"
-                          className="px-4 py-3.5 text-sm font-normal text-gray-700 max-w-40"
+                          className="px-4 py-3.5 text-sm font-normal text-gray-700"
                         >
                           Remark
                         </th>
@@ -369,7 +364,6 @@ const EmployeeLeadList = () => {
                         </th>
                       </tr>
                     </thead>
-
 
                     {
                       leadSection ?
@@ -388,7 +382,7 @@ const EmployeeLeadList = () => {
                             </td>
                             <td className="whitespace-nowrap"></td>
                             <td className="whitespace-nowrap">
-                              <form>
+                              {/* <form>
                                 <select
                                   name="status"
                                   onChange={statusFilter}
@@ -410,7 +404,7 @@ const EmployeeLeadList = () => {
                                   <option value="Meeting Done">Meeting Done</option>
                                   <option value="Future Prospect">Future Prospect</option>
                                 </select>
-                              </form>
+                              </form> */}
                             </td>
                             <td className="whitespace-nowrap"></td>
                             <td className="whitespace-nowrap"></td>
@@ -432,10 +426,6 @@ const EmployeeLeadList = () => {
                                 {lead.phone}
                               </td>
 
-                              <td className="whitespace-nowrap px-4 py-4">
-                                <div className="text-sm text-gray-900 ">{formatDate(lead.lastAssignedDate)}</div>
-                              </td>
-
                               <td className="whitespace-nowrap px-4 py-4 text-sm">
                                 {lead.status}
                               </td>
@@ -444,24 +434,26 @@ const EmployeeLeadList = () => {
                                 <div className="text-sm text-gray-900 ">{formatDate(lead.lastStatusUpdate)}</div>
                               </td>
 
-                              <td className="whitespace-nowrap px-4 py-4" style={{ 'whiteSpace': 'unset' }}>
+                              <td className="whitespace-nowrap px-4 py-4" style={{ 'white-space': 'unset' }}>
                                 <div className="text-sm font-medium text-gray-900">{lead.remark}</div>
                               </td>
 
                               <td className="whitespace-nowrap flex gap-1 px-4 py-4 text-sm text-gray-700 place-content-center">
-                                <div className="text-sm text-gray-900 rounded-full bg-green-400 px-4 py-1">
+                                {/* <div className="text-sm text-gray-900 rounded-full bg-green-400 px-4 py-1">
                                   <Link to={`/employeeLeadDetails/${lead._id}`}>View</Link>
+                                </div> */}
+                                <div className="text-sm text-white rounded-full bg-red-600 px-4 py-1">
+                                  <button onClick={() => deleteLead(lead._id)}>Delete</button>
                                 </div>
                                 <div className="text-sm text-white rounded-full bg-orange-500 px-4 py-1">
-                                  <Link to={`/employeeLeadUpdate/${lead._id}`}>Update</Link>
+                                  <Link to={`/updatePLead/${lead._id}`}>Update</Link>
                                 </div>
+
                               </td>
 
                             </tr>
                           ))}
                         </tbody>
-
-
                         : null
                     }
 
@@ -483,10 +475,6 @@ const EmployeeLeadList = () => {
                                 {lead.phone}
                               </td>
 
-                              <td className="whitespace-nowrap px-4 py-4">
-                                <div className="text-sm text-gray-900 ">{formatDate(lead.lastAssignedDate)}</div>
-                              </td>
-
                               <td className="whitespace-nowrap px-4 py-4 text-sm">
                                 {lead.status}
                               </td>
@@ -495,17 +483,21 @@ const EmployeeLeadList = () => {
                                 <div className="text-sm text-gray-900 ">{formatDate(lead.lastStatusUpdate)}</div>
                               </td>
 
-                              <td className="whitespace-nowrap px-4 py-4" style={{ 'whiteSpace': 'unset' }}>
+                              <td className="whitespace-nowrap px-4 py-4" style={{ 'white-space': 'unset' }}>
                                 <div className="text-sm font-medium text-gray-900">{lead.remark}</div>
                               </td>
 
                               <td className="whitespace-nowrap flex gap-1 px-4 py-4 text-sm text-gray-700 place-content-center">
-                                <div className="text-sm text-gray-900 rounded-full bg-green-400 px-4 py-1">
-                                  <Link to={`/employeeLeadDetails/${lead._id}`}>View</Link>
+                                {/* <div className="text-sm text-gray-900 rounded-full bg-green-400 px-4 py-1">
+                                <Link to={`/employeeLeadDetails/${lead._id}`}>View</Link>
+                              </div> */}
+                                <div className="text-sm text-white rounded-full bg-red-600 px-4 py-1">
+                                  <button onClick={() => deleteLead(lead._id)}>Delete</button>
                                 </div>
                                 <div className="text-sm text-white rounded-full bg-orange-500 px-4 py-1">
-                                  <Link to={`/employeeLeadUpdate/${lead._id}`}>Update</Link>
+                                  <Link to={`/updatePLead/${lead._id}`}>Update</Link>
                                 </div>
+
                               </td>
 
                             </tr>
@@ -532,10 +524,6 @@ const EmployeeLeadList = () => {
                                 {lead.phone}
                               </td>
 
-                              <td className="whitespace-nowrap px-4 py-4">
-                                <div className="text-sm text-gray-900 ">{formatDate(lead.lastAssignedDate)}</div>
-                              </td>
-
                               <td className="whitespace-nowrap px-4 py-4 text-sm">
                                 {lead.status}
                               </td>
@@ -544,7 +532,7 @@ const EmployeeLeadList = () => {
                                 <div className="text-sm text-gray-900 ">{formatDate(lead.lastStatusUpdate)}</div>
                               </td>
 
-                              <td className="whitespace-nowrap px-4 py-4" style={{ 'whiteSpace': 'unset' }}>
+                              <td className="whitespace-nowrap px-4 py-4" style={{ 'white-space': 'unset' }}>
                                 <div className="text-sm font-medium text-gray-900">{lead.remark}</div>
                               </td>
 
@@ -581,10 +569,6 @@ const EmployeeLeadList = () => {
                                 {lead.phone}
                               </td>
 
-                              <td className="whitespace-nowrap px-4 py-4">
-                                <div className="text-sm text-gray-900 ">{formatDate(lead.lastAssignedDate)}</div>
-                              </td>
-
                               <td className="whitespace-nowrap px-4 py-4 text-sm">
                                 {lead.status}
                               </td>
@@ -593,16 +577,16 @@ const EmployeeLeadList = () => {
                                 <div className="text-sm text-gray-900 ">{formatDate(lead.lastStatusUpdate)}</div>
                               </td>
 
-                              <td className="whitespace-nowrap px-4 py-4" style={{ 'whiteSpace': 'unset' }}>
+                              <td className="whitespace-nowrap px-4 py-4" style={{ 'white-space': 'unset' }}>
                                 <div className="text-sm font-medium text-gray-900">{lead.remark}</div>
                               </td>
 
                               <td className="whitespace-nowrap flex gap-1 px-4 py-4 text-sm text-gray-700 place-content-center">
-                                <div className="text-sm text-gray-900 rounded-full bg-green-400 px-4 py-1">
-                                  <Link to={`/employeeLeadDetails/${lead._id}`}>View</Link>
+                                <div className="text-sm text-white rounded-full bg-red-600 px-4 py-1">
+                                  <button onClick={() => deleteLead(lead._id)}>Delete</button>
                                 </div>
                                 <div className="text-sm text-white rounded-full bg-orange-500 px-4 py-1">
-                                  <Link to={`/employeeLeadUpdate/${lead._id}`}>Update</Link>
+                                  <Link to={`/updatePLead/${lead._id}`}>Update</Link>
                                 </div>
                               </td>
 
@@ -630,10 +614,6 @@ const EmployeeLeadList = () => {
                                 {lead.phone}
                               </td>
 
-                              <td className="whitespace-nowrap px-4 py-4">
-                                <div className="text-sm text-gray-900 ">{formatDate(lead.lastAssignedDate)}</div>
-                              </td>
-
                               <td className="whitespace-nowrap px-4 py-4 text-sm">
                                 {lead.status}
                               </td>
@@ -642,16 +622,16 @@ const EmployeeLeadList = () => {
                                 <div className="text-sm text-gray-900 ">{formatDate(lead.lastStatusUpdate)}</div>
                               </td>
 
-                              <td className="whitespace-nowrap px-4 py-4" style={{ 'whiteSpace': 'unset' }}>
+                              <td className="whitespace-nowrap px-4 py-4" style={{ 'white-space': 'unset' }}>
                                 <div className="text-sm font-medium text-gray-900">{lead.remark}</div>
                               </td>
 
                               <td className="whitespace-nowrap flex gap-1 px-4 py-4 text-sm text-gray-700 place-content-center">
-                                <div className="text-sm text-gray-900 rounded-full bg-green-400 px-4 py-1">
-                                  <Link to={`/employeeLeadDetails/${lead._id}`}>View</Link>
+                                <div className="text-sm text-white rounded-full bg-red-600 px-4 py-1">
+                                  <button onClick={() => deleteLead(lead._id)}>Delete</button>
                                 </div>
                                 <div className="text-sm text-white rounded-full bg-orange-500 px-4 py-1">
-                                  <Link to={`/employeeLeadUpdate/${lead._id}`}>Update</Link>
+                                  <Link to={`/updatePLead/${lead._id}`}>Update</Link>
                                 </div>
                               </td>
 
@@ -679,10 +659,6 @@ const EmployeeLeadList = () => {
                                 {lead.phone}
                               </td>
 
-                              <td className="whitespace-nowrap px-4 py-4">
-                                <div className="text-sm text-gray-900 ">{formatDate(lead.lastAssignedDate)}</div>
-                              </td>
-
                               <td className="whitespace-nowrap px-4 py-4 text-sm">
                                 {lead.status}
                               </td>
@@ -691,16 +667,16 @@ const EmployeeLeadList = () => {
                                 <div className="text-sm text-gray-900 ">{formatDate(lead.lastStatusUpdate)}</div>
                               </td>
 
-                              <td className="whitespace-nowrap px-4 py-4" style={{ 'whiteSpace': 'unset' }}>
+                              <td className="whitespace-nowrap px-4 py-4" style={{ 'white-space': 'unset' }}>
                                 <div className="text-sm font-medium text-gray-900">{lead.remark}</div>
                               </td>
 
                               <td className="whitespace-nowrap flex gap-1 px-4 py-4 text-sm text-gray-700 place-content-center">
-                                <div className="text-sm text-gray-900 rounded-full bg-green-400 px-4 py-1">
-                                  <Link to={`/employeeLeadDetails/${lead._id}`}>View</Link>
+                                <div className="text-sm text-white rounded-full bg-red-600 px-4 py-1">
+                                  <button onClick={() => deleteLead(lead._id)}>Delete</button>
                                 </div>
                                 <div className="text-sm text-white rounded-full bg-orange-500 px-4 py-1">
-                                  <Link to={`/employeeLeadUpdate/${lead._id}`}>Update</Link>
+                                  <Link to={`/updatePLead/${lead._id}`}>Update</Link>
                                 </div>
                               </td>
 
@@ -722,4 +698,4 @@ const EmployeeLeadList = () => {
   );
 };
 
-export default EmployeeLeadList;
+export default PersonalList;

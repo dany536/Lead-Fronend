@@ -1,37 +1,27 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate, useParams, Link, Form } from 'react-router-dom';
-import moment from 'moment';
-import Admin from './admin';
-import Header from './header';
-import url from './url';
+
+import Header from '../header';
+import url from '../url';
 
 const API_BASE_URL = url;
 
-const LeadUpdate = () => {
+const UpdatePLead = () => {
     const [lead, setLead] = useState([]);
-    const [employee, setEmployee] = useState([]);
     const navigate = useNavigate();
     const { id } = useParams();
     const [date, setDate] = useState([]);
 
-
     useEffect(() => {
         if (id) {
             fetchLead();
-            fetchEmployee();
         }
     }, [id]);
 
     const fetchLead = async () => {
-        axios.get(`${API_BASE_URL}/lead/${id}`)
+        axios.get(`${API_BASE_URL}/personalLead/${id}`)
             .then(res => setLead(res.data))
-            .catch(err => console.log(err))
-    };
-
-    const fetchEmployee = async () => {
-        axios.get(`${API_BASE_URL}/employees`)
-            .then(res => setEmployee(res.data))
             .catch(err => console.log(err))
     };
 
@@ -42,7 +32,7 @@ const LeadUpdate = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         if (id) {
-            await axios.put(`${API_BASE_URL}/lead/${id}`, lead);
+            await axios.put(`${API_BASE_URL}/personalLead/${id}`, lead);
         } else {
             await axios.post(`${API_BASE_URL}/addLead`, lead);
 
@@ -56,15 +46,18 @@ const LeadUpdate = () => {
 
     // setDate(moment(formatDate(lead.lastAssignedDate)).format('YYYY-MM-DD'))
 
+    const today = new Date();
+    const test = today.setDate(today.getDate());
+    const defaultValue = new Date(test).toISOString().split('T')[0]
+
     return (
         <>
-        <Header />
-        <Admin />
+            <Header />
             <form onSubmit={handleSubmit}>
                 <div className="bg-gray-100 p-10">
                     <div className='max-w-5xl mx-auto bg-white rounded shadow-lg'>
                         <div className="text-gray-600 text-center text-base md:text-3xl p-5 pb-0">
-                            <p className="font-medium">Update Lead Details</p>
+                            <p className="font-medium">Update Personal Lead Details</p>
                         </div>
                         <div className='grid md:grid-cols-2 grid-cols-1'>
                             <div className="p-4 px-4 md:p-10 md:pt-5">
@@ -103,32 +96,15 @@ const LeadUpdate = () => {
                             </div>
                             <div className="p-4 px-4 md:p-10 md:pt-5">
                                 <div className="grid gap-4 gap-y-2 text-sm grid-cols-1 md:grid-cols-5">
-                                    <div className="md:col-span-5">
-                                        <label>Previous Assign</label>
-                                        <input value={lead.assignedTo ? lead.assignedTo.name : 'Not Assign'} id="assignedTo" className="h-10 border mt-1 rounded px-4 w-full bg-gray-50" />
-                                    </div>
 
                                     <div className="md:col-span-5">
-                                        <label htmlFor="assignedTo">New Assign To</label>
-                                        <select
-                                            name="assignedTo"
-                                            value={lead.assignedTo ? lead.assignedTo.name : '--'}
-                                            onChange={handleChange}
-                                            id="assignedTo" className="h-10 border mt-1 rounded p-2 w-full bg-gray-50"
-                                        >
-                                            <option>Select One</option>
-                                            {
-                                                employee.map((employee) => (
-                                                    <option key={employee._id} value={employee._id}>{employee.name}</option>
-                                                ))
-                                            }
-                                        </select>
-                                        {/* <input type="text" name="assignedTo" value={lead.assignedTo ? lead.assignedTo.name : ''} onChange={handleChange} id="assignedTo" className="h-10 border mt-1 rounded px-4 w-full bg-gray-50" /> */}
+                                        <label htmlFor="lastAssignedDate">Last Status Update</label>
+                                        <input type="date" value={formatDate(lead.lastStatusUpdate)} className="h-10 border mt-1 rounded px-4 w-full bg-gray-50" disabled />
                                     </div>
 
-                                    <div className="md:col-span-5">
-                                        <label htmlFor="lastAssignedDate">Date of Assign</label>
-                                        <input type="date" name="lastAssignedDate" value={formatDate(lead.lastAssignedDate)} onChange={handleChange} id="lastAssignedDate" className="h-10 border mt-1 rounded px-4 w-full bg-gray-50" />
+                                    <div className="md:col-span-5 hidden">
+                                        <label htmlFor="lastStatusUpdate">Latest Status Update Date</label>
+                                        <input id="lastStatusUpdate" type="date" name="lastStatusUpdate" value={lead.lastStatusUpdate = defaultValue} defaultValue={defaultValue} className="h-10 border mt-1 rounded px-4 w-full bg-gray-50"/>
                                     </div>
 
                                     <div className="md:col-span-5">
@@ -158,12 +134,12 @@ const LeadUpdate = () => {
 
                                     <div className="md:col-span-5">
                                         <label htmlFor="remark">Remarks</label>
-                                        <textarea rows="4" name='remark'  id='remark' value={lead.remark} onChange={handleChange} className="border mt-1 rounded p-3 w-full bg-gray-50" ></textarea>
+                                        <textarea rows="4" name='remark' id='remark' value={lead.remark} onChange={handleChange} className="border mt-1 rounded p-3 w-full bg-gray-50" ></textarea>
                                     </div>
 
                                     <div className="md:col-span-5 text-right pt-2">
                                         <div className="inline-flex items-end gap-2">
-                                            <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"><Link to="/leadList">Back</Link></button>
+                                            <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" onClick={() => navigate(1)}>Back</button>
                                             <button type='submit' className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">{id ? 'Update' : 'Add'} Lead</button>
                                         </div>
                                     </div>
@@ -178,4 +154,4 @@ const LeadUpdate = () => {
     );
 };
 
-export default LeadUpdate;
+export default UpdatePLead;

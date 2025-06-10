@@ -3,6 +3,7 @@ import axios from 'axios';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import CardDataStats from './CardDataStats';
 import Header from './header';
+import { PieChart, pieArcLabelClasses } from '@mui/x-charts/PieChart';
 
 import Cookies from 'js-cookie';
 import { jwtDecode } from "jwt-decode";
@@ -13,6 +14,7 @@ const API_BASE_URL = url;
 
 const EmployeeLeadList = () => {
   const [leads, setLeads] = useState([]);
+  const [records, setRecords] = useState([]);
   const { id } = useParams();
   // const [employeeLeads, setEmployeeLeads] = useState([]);
   const [employee, setEmployee] = useState([]);
@@ -25,12 +27,20 @@ const EmployeeLeadList = () => {
   const [closeSection, setCloseSection] = useState(false)
   const [followUpSection, setFollowUpSection] = useState(false)
   const [noUpdateSection, setNoUpdateSection] = useState(false)
+  const [didNotAnswerSection, setDidNotAnsswerSection] = useState(false)
+  const [meetingDoneSection, setmeetingDoneSection] = useState(false)
+
+  const [bColor, setbColor] = useState('red');
+
 
   const leadfn = () => {
     setLeadSection(true)
     setCloseSection(false)
     setFollowUpSection(false)
     setNoUpdateSection(false)
+    setDidNotAnsswerSection(false)
+    setmeetingDoneSection(false)
+    // const bColor = 'orange'
   }
 
   const closefn = () => {
@@ -38,6 +48,8 @@ const EmployeeLeadList = () => {
     setCloseSection(true)
     setFollowUpSection(false)
     setNoUpdateSection(false)
+    setDidNotAnsswerSection(false)
+    setmeetingDoneSection(false)
   }
 
   const followUpfn = () => {
@@ -45,6 +57,8 @@ const EmployeeLeadList = () => {
     setCloseSection(false)
     setFollowUpSection(true)
     setNoUpdateSection(false)
+    setDidNotAnsswerSection(false)
+    setmeetingDoneSection(false)
   }
 
   const noUpdatefn = () => {
@@ -52,6 +66,26 @@ const EmployeeLeadList = () => {
     setCloseSection(false)
     setFollowUpSection(false)
     setNoUpdateSection(true)
+    setDidNotAnsswerSection(false)
+    setmeetingDoneSection(false)
+  }
+
+  const didNotAnswerfn = () => {
+    setLeadSection(false)
+    setCloseSection(false)
+    setFollowUpSection(false)
+    setNoUpdateSection(false)
+    setDidNotAnsswerSection(true)
+    setmeetingDoneSection(false)
+  }
+
+  const meetingDonefn = () => {
+    setLeadSection(false)
+    setCloseSection(false)
+    setFollowUpSection(false)
+    setNoUpdateSection(false)
+    setDidNotAnsswerSection(false)
+    setmeetingDoneSection(true)
   }
 
   axios.defaults.withCredentials = true
@@ -84,6 +118,7 @@ const EmployeeLeadList = () => {
   const fetchLeads = async (id) => {
     const res = await axios.get(`${API_BASE_URL}/leadsadmin/${id}`);
     setLeads(res.data);
+    setRecords(res.data);
   };
 
   const fetchEmployee = async (id) => {
@@ -99,25 +134,116 @@ const EmployeeLeadList = () => {
   const closeLead = leads.filter(({ status }) => status == "Close");
   const inFollowUpLead = leads.filter(({ status }) => status == "In Follow Up");
   const noUpdateLead = leads.filter(({ status }) => status == "No Update");
+  const didNotAnswerLead = leads.filter(({ status }) => status == "Did Not Answer");
+  const notInterestedLead = leads.filter(({ status }) => status == "Not Interested");
+  const switchedOffLead = leads.filter(({ status }) => status == "Switched Off");
+  const busyLead = leads.filter(({ status }) => status == "Busy");
+  const callCutLead = leads.filter(({ status }) => status == "Call Cut");
+  const meetingDoneLead = leads.filter(({ status }) => status == "Meeting Done");
+  const futureProspectLead = leads.filter(({ status }) => status == "Future Prospect");
+
+
+  function nameFilter(data) {
+    const deep = data.target.value
+    setRecords(leads.filter((lead) => {
+      return deep.toLowerCase() === ''
+        ? lead
+        : lead.name.toLowerCase().includes(data.target.value);
+    }))
+  }
+
+  function numberFilter(data) {
+    const deep = data.target.value
+    setRecords(leads.filter((lead) => {
+      return deep.toLowerCase() === ''
+        ? lead
+        : lead.phone.toLowerCase().includes(data.target.value);
+    }))
+  }
+
+  function statusFilter(data) {
+    const deep = data.target.value
+    setRecords(leads.filter((lead) => {
+      return deep === ''
+        ? lead
+        : lead.status.includes(data.target.value);
+    }))
+  }
+
+  const data = [
+    { label: 'Close', value: closeLead.length, color: '#0088FE' },
+    { label: 'In Follow Up', value: inFollowUpLead.length, color: '#8bd3c7' },
+    { label: 'No Update', value: noUpdateLead.length, color: '#fdcce5' },
+    { label: 'Did Not Answer', value: didNotAnswerLead.length, color: '#beb9db' },
+    { label: 'Not Interested', value: notInterestedLead.length, color: '#ffee65' },
+    { label: 'Switched Off', value: switchedOffLead.length, color: '#ffb55a' },
+    { label: 'Busy', value: busyLead.length, color: '#bd7ebe' },
+    { label: 'Call Cut', value: callCutLead.length, color: '#b2e061' },
+    { label: 'Meeting Done', value: meetingDoneLead.length, color: '#7eb0d5' },
+    { label: 'Future Prospect', value: futureProspectLead.length, color: '#fd7f6f' },
+  ];
+
+  const sizing = {
+    margin: { right: 5 },
+    width: 400,
+    height: 400,
+    legend: { hidden: true },
+  };
+  const TOTAL = data.map((item) => item.value).reduce((a, b) => a + b, 0);
+
+  const getArcLabel = (params) => {
+    const percent = params.value / TOTAL;
+    return `${(percent * 100).toFixed(0)}%`;
+  };
 
   return (
     <>
       <Header />
 
-      <div className='bg-gray-300 h-screen'>
-        <section className="mx-auto w-full max-w-6xl px-4 py-4 md:mt-3">
-          <div className="flex space-y-2 flex-row items-center justify-between md:space-y-0">
+      <div className='bg-gray-300 min-h-screen'>
+        <section className="mx-auto w-full max-w-7xl md:px-4 py-4 md:mt-3">
+
+          <div className="hidden md:flex space-y-2 flex-col md:flex-row items-center justify-between md:space-y-0">
             <div>
               <h2 className="text-2xl font-semibold">Lead Details</h2>
             </div>
-            <div>
+            <div className='flex flex-row gap-5'>
               <h2 className="text-xl font-semibold">Hi {employee.name}!</h2>
+            </div>
+            <div>
+              <Link
+                type="button" to={`/personalList/${employee._id}`}
+                className="rounded-md bg-black px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-black/80 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-black"
+              >
+                Switch to Personal
+              </Link>
             </div>
           </div>
 
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 max-w-6xl mx-auto pt-7">
+          <div className="md:hidden">
+            <div>
+              <h2 className="text-2xl text-center font-semibold">Lead Details</h2>
+            </div>
+            <div className="flex space-y-2 flex-row items-center justify-between md:space-y-0 px-5 pt-2">
+              <div className='flex flex-row gap-5'>
+                <h2 className="text-xl font-semibold">Hi {employee.name}!</h2>
+              </div>
+              <div>
+                <Link
+                  type="button" to={`/personalList/${employee._id}`}
+                  className="rounded-md bg-black px-2.5 py-1.5 text-sm font-semibold text-white shadow-sm hover:bg-black/80 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-black"
+                >
+                  Switch to Personal
+                </Link>
+              </div>
+            </div>
+
+          </div>
+
+          <div className="grid grid-cols-2 md:grid-cols-6 gap-4 md:gap-4 max-w-7xl mx-auto pt-7 px-5">
+            {/* <button onClick={leadfn} className='border-2' style={{ borderColor: bColor }}> */}
             <button onClick={leadfn}>
-              <CardDataStats title="Total Leads" total={leads.length} >
+              <CardDataStats title="Total Leads" total={leads.length}>
                 <svg
                   className="fill-primary dark:fill-white"
                   width="22"
@@ -139,7 +265,51 @@ const EmployeeLeadList = () => {
             </button>
 
             <button onClick={closefn}>
-              <CardDataStats title="Leads Close" total={closeLead.length} >
+              <CardDataStats title="Leads Closed" total={closeLead.length} >
+                <svg
+                  className="fill-primary dark:fill-white"
+                  width="22"
+                  height="16"
+                  viewBox="0 0 22 16"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M11 15.1156C4.19376 15.1156 0.825012 8.61876 0.687512 8.34376C0.584387 8.13751 0.584387 7.86251 0.687512 7.65626C0.825012 7.38126 4.19376 0.918762 11 0.918762C17.8063 0.918762 21.175 7.38126 21.3125 7.65626C21.4156 7.86251 21.4156 8.13751 21.3125 8.34376C21.175 8.61876 17.8063 15.1156 11 15.1156ZM2.26876 8.00001C3.02501 9.27189 5.98126 13.5688 11 13.5688C16.0188 13.5688 18.975 9.27189 19.7313 8.00001C18.975 6.72814 16.0188 2.43126 11 2.43126C5.98126 2.43126 3.02501 6.72814 2.26876 8.00001Z"
+                    fill=""
+                  />
+                  <path
+                    d="M11 10.9219C9.38438 10.9219 8.07812 9.61562 8.07812 8C8.07812 6.38438 9.38438 5.07812 11 5.07812C12.6156 5.07812 13.9219 6.38438 13.9219 8C13.9219 9.61562 12.6156 10.9219 11 10.9219ZM11 6.625C10.2437 6.625 9.625 7.24375 9.625 8C9.625 8.75625 10.2437 9.375 11 9.375C11.7563 9.375 12.375 8.75625 12.375 8C12.375 7.24375 11.7563 6.625 11 6.625Z"
+                    fill=""
+                  />
+                </svg>
+              </CardDataStats>
+            </button>
+
+            <button onClick={meetingDonefn}>
+              <CardDataStats title="Meeting Done" total={meetingDoneLead.length} >
+                <svg
+                  className="fill-primary dark:fill-white"
+                  width="22"
+                  height="16"
+                  viewBox="0 0 22 16"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M11 15.1156C4.19376 15.1156 0.825012 8.61876 0.687512 8.34376C0.584387 8.13751 0.584387 7.86251 0.687512 7.65626C0.825012 7.38126 4.19376 0.918762 11 0.918762C17.8063 0.918762 21.175 7.38126 21.3125 7.65626C21.4156 7.86251 21.4156 8.13751 21.3125 8.34376C21.175 8.61876 17.8063 15.1156 11 15.1156ZM2.26876 8.00001C3.02501 9.27189 5.98126 13.5688 11 13.5688C16.0188 13.5688 18.975 9.27189 19.7313 8.00001C18.975 6.72814 16.0188 2.43126 11 2.43126C5.98126 2.43126 3.02501 6.72814 2.26876 8.00001Z"
+                    fill=""
+                  />
+                  <path
+                    d="M11 10.9219C9.38438 10.9219 8.07812 9.61562 8.07812 8C8.07812 6.38438 9.38438 5.07812 11 5.07812C12.6156 5.07812 13.9219 6.38438 13.9219 8C13.9219 9.61562 12.6156 10.9219 11 10.9219ZM11 6.625C10.2437 6.625 9.625 7.24375 9.625 8C9.625 8.75625 10.2437 9.375 11 9.375C11.7563 9.375 12.375 8.75625 12.375 8C12.375 7.24375 11.7563 6.625 11 6.625Z"
+                    fill=""
+                  />
+                </svg>
+              </CardDataStats>
+            </button>
+
+            <button onClick={didNotAnswerfn}>
+              <CardDataStats title="Did Not Answer" total={didNotAnswerLead.length} >
                 <svg
                   className="fill-primary dark:fill-white"
                   width="22"
@@ -161,7 +331,7 @@ const EmployeeLeadList = () => {
             </button>
 
             <button onClick={followUpfn}>
-              <CardDataStats title="Leads In Follow Up" total={inFollowUpLead.length}>
+              <CardDataStats title="In Follow Up" total={inFollowUpLead.length}>
                 <svg
                   className="fill-primary dark:fill-white"
                   width="22"
@@ -183,7 +353,7 @@ const EmployeeLeadList = () => {
             </button>
 
             <button onClick={noUpdatefn}>
-              <CardDataStats title="Leads with No Update" total={noUpdateLead.length}>
+              <CardDataStats title="No Update" total={noUpdateLead.length}>
                 <svg
                   className="fill-primary dark:fill-white"
                   width="22"
@@ -208,6 +378,25 @@ const EmployeeLeadList = () => {
               </CardDataStats>
             </button>
           </div>
+
+          {/* <div className='grid gap-4 max-w-5xl mx-auto pt-5'>
+            <PieChart
+              series={[
+                {
+                  outerRadius: 190,
+                  data,
+                  arcLabel: getArcLabel,
+                },
+              ]}
+              sx={{
+                [`& .${pieArcLabelClasses.root}`]: {
+                  fill: 'white',
+                  fontSize: 14,
+                },
+              }}
+              {...sizing}
+            />
+          </div> */}
 
           <div className="mt-6 flex flex-col">
             <div className="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
@@ -277,7 +466,50 @@ const EmployeeLeadList = () => {
                     {
                       leadSection ?
                         <tbody className="divide-y divide-gray-200 bg-white text-center ">
-                          {leads.map((lead, index) => (
+                          <tr className='bg-white'>
+                            <td className="whitespace-nowrap"></td>
+                            <td className="whitespace-nowrap">
+                              <form>
+                                <input className='form-control text-center text-sm p-1 border' placeholder='Search Name' onChange={nameFilter} />
+                              </form>
+                            </td>
+                            <td className="whitespace-nowrap">
+                              <form>
+                                <input className='form-control text-center text-sm p-1 border' placeholder='Search No.' onChange={numberFilter} />
+                              </form>
+                            </td>
+                            <td className="whitespace-nowrap"></td>
+                            <td className="whitespace-nowrap">
+                              <form>
+                                <select
+                                  name="status"
+                                  onChange={statusFilter}
+                                  id="status" className="text-sm p-1 text-center border"
+                                >
+                                  <option>Select</option>
+                                  <option value="No Update">No Update</option>
+                                  <option value="Close">Close</option>
+                                  <option value="In Follow Up">In Follow Up</option>
+                                  <option value="Did Not Answer">Did Not Answer</option>
+                                  <option value="Not Interested">Not Interested</option>
+                                  <option value="Switched Off">Switched Off</option>
+                                  <option value="Broker">Broker</option>
+                                  <option value="Invalid Number">Invalid Number</option>
+                                  <option value="Spam">Spam</option>
+                                  <option value="Incoming Not Available">Incoming Not Available</option>
+                                  <option value="Busy">Busy</option>
+                                  <option value="Call Cut">Call Cut</option>
+                                  <option value="Meeting Done">Meeting Done</option>
+                                  <option value="Future Prospect">Future Prospect</option>
+                                </select>
+                              </form>
+                            </td>
+                            <td className="whitespace-nowrap"></td>
+                            <td className="whitespace-nowrap"></td>
+                            <td className="whitespace-nowrap"></td>
+
+                          </tr>
+                          {records.map((lead, index) => (
                             <tr key={index + 1}>
 
                               <td className="whitespace-nowrap px-4 py-4">
@@ -304,14 +536,14 @@ const EmployeeLeadList = () => {
                                 <div className="text-sm text-gray-900 ">{formatDate(lead.lastStatusUpdate)}</div>
                               </td>
 
-                              <td className="whitespace-nowrap px-4 py-4">
+                              <td className="whitespace-nowrap px-4 py-4" style={{ 'white-space': 'unset' }}>
                                 <div className="text-sm font-medium text-gray-900">{lead.remark}</div>
                               </td>
 
                               <td className="whitespace-nowrap flex gap-1 px-4 py-4 text-sm text-gray-700 place-content-center">
-                                <div className="text-sm text-gray-900 rounded-full bg-green-400 px-4 py-1">
+                                {/* <div className="text-sm text-gray-900 rounded-full bg-green-400 px-4 py-1">
                                   <Link to={`/employeeLeadDetails/${lead._id}`}>View</Link>
-                                </div>
+                                </div> */}
                                 <div className="text-sm text-white rounded-full bg-orange-500 px-4 py-1">
                                   <Link to={`/employeeLeadUpdate/${lead._id}`}>Update</Link>
                                 </div>
@@ -353,14 +585,14 @@ const EmployeeLeadList = () => {
                                 <div className="text-sm text-gray-900 ">{formatDate(lead.lastStatusUpdate)}</div>
                               </td>
 
-                              <td className="whitespace-nowrap px-4 py-4">
+                              <td className="whitespace-nowrap px-4 py-4" style={{ 'white-space': 'unset' }}>
                                 <div className="text-sm font-medium text-gray-900">{lead.remark}</div>
                               </td>
 
                               <td className="whitespace-nowrap flex gap-1 px-4 py-4 text-sm text-gray-700 place-content-center">
-                                <div className="text-sm text-gray-900 rounded-full bg-green-400 px-4 py-1">
+                                {/* <div className="text-sm text-gray-900 rounded-full bg-green-400 px-4 py-1">
                                   <Link to={`/employeeLeadDetails/${lead._id}`}>View</Link>
-                                </div>
+                                </div> */}
                                 <div className="text-sm text-white rounded-full bg-orange-500 px-4 py-1">
                                   <Link to={`/employeeLeadUpdate/${lead._id}`}>Update</Link>
                                 </div>
@@ -402,14 +634,14 @@ const EmployeeLeadList = () => {
                                 <div className="text-sm text-gray-900 ">{formatDate(lead.lastStatusUpdate)}</div>
                               </td>
 
-                              <td className="whitespace-nowrap px-4 py-4">
+                              <td className="whitespace-nowrap px-4 py-4" style={{ 'white-space': 'unset' }}>
                                 <div className="text-sm font-medium text-gray-900">{lead.remark}</div>
                               </td>
 
                               <td className="whitespace-nowrap flex gap-1 px-4 py-4 text-sm text-gray-700 place-content-center">
-                                <div className="text-sm text-gray-900 rounded-full bg-green-400 px-4 py-1">
+                                {/* <div className="text-sm text-gray-900 rounded-full bg-green-400 px-4 py-1">
                                   <Link to={`/employeeLeadDetails/${lead._id}`}>View</Link>
-                                </div>
+                                </div> */}
                                 <div className="text-sm text-white rounded-full bg-orange-500 px-4 py-1">
                                   <Link to={`/employeeLeadUpdate/${lead._id}`}>Update</Link>
                                 </div>
@@ -451,14 +683,112 @@ const EmployeeLeadList = () => {
                                 <div className="text-sm text-gray-900 ">{formatDate(lead.lastStatusUpdate)}</div>
                               </td>
 
-                              <td className="whitespace-nowrap px-4 py-4">
+                              <td className="whitespace-nowrap px-4 py-4" style={{ 'white-space': 'unset' }}>
                                 <div className="text-sm font-medium text-gray-900">{lead.remark}</div>
                               </td>
 
                               <td className="whitespace-nowrap flex gap-1 px-4 py-4 text-sm text-gray-700 place-content-center">
-                                <div className="text-sm text-gray-900 rounded-full bg-green-400 px-4 py-1">
+                                {/* <div className="text-sm text-gray-900 rounded-full bg-green-400 px-4 py-1">
                                   <Link to={`/employeeLeadDetails/${lead._id}`}>View</Link>
+                                </div> */}
+                                <div className="text-sm text-white rounded-full bg-orange-500 px-4 py-1">
+                                  <Link to={`/employeeLeadUpdate/${lead._id}`}>Update</Link>
                                 </div>
+                              </td>
+
+                            </tr>
+                          ))}
+                        </tbody>
+                        : null
+                    }
+
+                    {
+                      didNotAnswerSection ?
+                        <tbody className="divide-y divide-gray-200 bg-white text-center ">
+                          {didNotAnswerLead.map((lead, index) => (
+                            <tr key={index + 1}>
+
+                              <td className="whitespace-nowrap px-4 py-4">
+                                <div className="text-sm font-medium text-gray-900">{index + 1}</div>
+                              </td>
+
+                              <td className="whitespace-nowrap px-4 py-4">
+                                <div className="text-sm font-medium text-gray-900">{lead.name}</div>
+                              </td>
+
+                              <td className="whitespace-nowrap px-4 py-4 text-sm">
+                                {lead.phone}
+                              </td>
+
+                              <td className="whitespace-nowrap px-4 py-4">
+                                <div className="text-sm text-gray-900 ">{formatDate(lead.lastAssignedDate)}</div>
+                              </td>
+
+                              <td className="whitespace-nowrap px-4 py-4 text-sm">
+                                {lead.status}
+                              </td>
+
+                              <td className="whitespace-nowrap px-4 py-4">
+                                <div className="text-sm text-gray-900 ">{formatDate(lead.lastStatusUpdate)}</div>
+                              </td>
+
+                              <td className="whitespace-nowrap px-4 py-4" style={{ 'white-space': 'unset' }}>
+                                <div className="text-sm font-medium text-gray-900">{lead.remark}</div>
+                              </td>
+
+                              <td className="whitespace-nowrap flex gap-1 px-4 py-4 text-sm text-gray-700 place-content-center">
+                                {/* <div className="text-sm text-gray-900 rounded-full bg-green-400 px-4 py-1">
+                                  <Link to={`/employeeLeadDetails/${lead._id}`}>View</Link>
+                                </div> */}
+                                <div className="text-sm text-white rounded-full bg-orange-500 px-4 py-1">
+                                  <Link to={`/employeeLeadUpdate/${lead._id}`}>Update</Link>
+                                </div>
+                              </td>
+
+                            </tr>
+                          ))}
+                        </tbody>
+                        : null
+                    }
+
+                    {
+                      meetingDoneSection ?
+                        <tbody className="divide-y divide-gray-200 bg-white text-center ">
+                          {meetingDoneLead.map((lead, index) => (
+                            <tr key={index + 1}>
+
+                              <td className="whitespace-nowrap px-4 py-4">
+                                <div className="text-sm font-medium text-gray-900">{index + 1}</div>
+                              </td>
+
+                              <td className="whitespace-nowrap px-4 py-4">
+                                <div className="text-sm font-medium text-gray-900">{lead.name}</div>
+                              </td>
+
+                              <td className="whitespace-nowrap px-4 py-4 text-sm">
+                                {lead.phone}
+                              </td>
+
+                              <td className="whitespace-nowrap px-4 py-4">
+                                <div className="text-sm text-gray-900 ">{formatDate(lead.lastAssignedDate)}</div>
+                              </td>
+
+                              <td className="whitespace-nowrap px-4 py-4 text-sm">
+                                {lead.status}
+                              </td>
+
+                              <td className="whitespace-nowrap px-4 py-4">
+                                <div className="text-sm text-gray-900 ">{formatDate(lead.lastStatusUpdate)}</div>
+                              </td>
+
+                              <td className="whitespace-nowrap px-4 py-4" style={{ 'white-space': 'unset' }}>
+                                <div className="text-sm font-medium text-gray-900">{lead.remark}</div>
+                              </td>
+
+                              <td className="whitespace-nowrap flex gap-1 px-4 py-4 text-sm text-gray-700 place-content-center">
+                                {/* <div className="text-sm text-gray-900 rounded-full bg-green-400 px-4 py-1">
+                                  <Link to={`/employeeLeadDetails/${lead._id}`}>View</Link>
+                                </div> */}
                                 <div className="text-sm text-white rounded-full bg-orange-500 px-4 py-1">
                                   <Link to={`/employeeLeadUpdate/${lead._id}`}>Update</Link>
                                 </div>

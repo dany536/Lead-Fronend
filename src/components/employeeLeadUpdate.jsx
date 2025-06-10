@@ -85,7 +85,7 @@ const EmployeeLeadUpdate = () => {
 
                                     <div className="md:col-span-5">
                                         <label htmlFor="phone">Mobile Number</label>
-                                        <input type="text" name="phone" value={lead.phone} onChange={handleChange} id="phone" className="h-10 border mt-1 rounded px-4 w-full bg-gray-50" disabled />
+                                        <input type="text" name="phone" value={lead.phone} onChange={handleChange} id="phone" className="h-10 border mt-1 rounded px-4 w-full bg-gray-50"  />
                                     </div>
 
                                     <div className="md:col-span-5">
@@ -136,7 +136,7 @@ const EmployeeLeadUpdate = () => {
                                             id="status" className="h-10 border mt-1 rounded px-4 w-full bg-gray-50"
                                         >
                                             <option value="No Update">No Update</option>
-                                            <option value="Close">Close</option>
+                                            <option value="Close">Closed</option>
                                             <option value="In Follow Up">In Follow Up</option>
                                             <option value="Did Not Answer">Did Not Answer</option>
                                             <option value="Not Interested">Not Interested</option>
@@ -148,6 +148,7 @@ const EmployeeLeadUpdate = () => {
                                             <option value="Busy">Busy</option>
                                             <option value="Call Cut">Call Cut</option>
                                             <option value="Meeting Done">Meeting Done</option>
+                                            <option value="Future Prospect">Future Prospect</option>
                                         </select>
                                     </div>
 
@@ -158,7 +159,7 @@ const EmployeeLeadUpdate = () => {
 
                                     <div className="md:col-span-5 text-right pt-2">
                                         <div className="inline-flex items-end gap-2">
-                                            <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" onClick={() => navigate(-1)}>Back</button>
+                                            <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" onClick={() => navigate(1)}>Back</button>
                                             <button type='submit' className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">{id ? 'Update' : 'Add'} Lead</button>
                                         </div>
                                     </div>
