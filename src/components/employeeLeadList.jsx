@@ -16,6 +16,7 @@ const EmployeeLeadList = () => {
   const [records, setRecords] = useState([]);
   const [employeeLeads, setEmployeeLeads] = useState([]);
   const [employee, setEmployee] = useState([]);
+  const [team, setTeam] = useState([]);
 
   const { id } = useParams();
   const navigate = useNavigate()
@@ -85,6 +86,7 @@ const EmployeeLeadList = () => {
     if (id) {
       fetchLeads(id);
       fetchEmployee(id);
+      fetchTeamMember(id);
 
     }
     // const Token = Cookies.get('accessToken');
@@ -105,6 +107,12 @@ const EmployeeLeadList = () => {
     console.log(res.data)
   };
 
+  const fetchTeamMember = async (id) => {
+    const res = await axios.get(`${API_BASE_URL}/leaderPannel/${id}`);
+    console.log("Team Member Data:", res.data);
+    setTeam(res.data);
+    console.log(res.data)
+  };
 
   const formatDate = (dateString) => {
     return dateString ? new Date(dateString).toLocaleDateString() : 'N/A';
@@ -158,20 +166,34 @@ const EmployeeLeadList = () => {
     <>
       <Header />
 
-      <div className='bg-gray-300 min-h-screen'>
+      <div className='min-h-screen bg-gradient-to-tr from-blue-100 via-white to-green-100 pt-2'>
         <section className="mx-auto w-full max-w-7xl px-4 py-4 md:mt-3">
-          <div className="flex flex-col space-y-4 md:flex-row md:items-center md:justify-between md:space-y-0">
+          <div className="flex flex-col space-y-4 md:flex-row items-center md:justify-between md:space-y-0">
             <div>
               <h2 className="text-2xl font-semibold">Lead Details</h2>
             </div>
             <div>
               <h2 className="text-xl font-semibold">Hi {employee.name}</h2>
             </div>
+
+            {team.length === 0 ? (
+              <div></div>
+            ) : (
+              <div>
+                <Link
+                  type="button" to={`/leaderPannel/${employee._id}`}
+                  className="rounded-md bg-gray-500 px-10 py-2 font-semibold text-white shadow-sm hover:bg-black/80 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-black"
+                >
+                  Leader Panel
+                </Link>
+              </div>
+            )}
+
           </div>
 
           <div className="grid grid-cols-2 md:grid-cols-6 gap-4 md:gap-4 max-w-7xl mx-auto pt-7 px-5">
-            <button onClick={leadfn}>
-              <CardDataStats title="Total Leads" total={leads.length} >
+            <button onClick={leadfn} className='bg-gradient-to-r from-white to-blue-400 rounded-xl'>
+              <CardDataStats title="Total Leads" total={leads.length}>
                 <svg
                   className="fill-primary dark:fill-white"
                   width="22"
@@ -191,7 +213,8 @@ const EmployeeLeadList = () => {
                 </svg>
               </CardDataStats>
             </button>
-            <button onClick={closefn}>
+
+            <button onClick={closefn} className='bg-gradient-to-r from-white test rounded-xl'>
               <CardDataStats title="Leads Closed" total={closeLead.length} >
                 <svg
                   className="fill-primary dark:fill-white"
@@ -212,7 +235,8 @@ const EmployeeLeadList = () => {
                 </svg>
               </CardDataStats>
             </button>
-            <button onClick={meetingDonefn}>
+
+            <button onClick={meetingDonefn} className='bg-gradient-to-r from-white to-yellow-400 rounded-xl'>
               <CardDataStats title="Meeting Done" total={meetingDoneLead.length} >
                 <svg
                   className="fill-primary dark:fill-white"
@@ -233,7 +257,8 @@ const EmployeeLeadList = () => {
                 </svg>
               </CardDataStats>
             </button>
-            <button onClick={didNotAnswerfn}>
+
+            <button onClick={didNotAnswerfn} className='bg-gradient-to-r from-white to-red-400 rounded-xl'>
               <CardDataStats title="Did Not Answer" total={didNotAnswerLead.length} >
                 <svg
                   className="fill-primary dark:fill-white"
@@ -255,8 +280,8 @@ const EmployeeLeadList = () => {
               </CardDataStats>
             </button>
 
-            <button onClick={followUpfn}>
-              <CardDataStats title="Leads In Follow Up" total={inFollowUpLead.length}>
+            <button onClick={followUpfn} className='bg-gradient-to-r from-white to-purple-400 rounded-xl'>
+              <CardDataStats title="In Follow Up" total={inFollowUpLead.length}>
                 <svg
                   className="fill-primary dark:fill-white"
                   width="22"
@@ -277,7 +302,7 @@ const EmployeeLeadList = () => {
               </CardDataStats>
             </button>
 
-            <button onClick={noUpdatefn}>
+            <button onClick={noUpdatefn} className='bg-gradient-to-r from-white to-gray-400 rounded-xl'>
               <CardDataStats title="No Update" total={noUpdateLead.length}>
                 <svg
                   className="fill-primary dark:fill-white"
@@ -302,7 +327,6 @@ const EmployeeLeadList = () => {
                 </svg>
               </CardDataStats>
             </button>
-
           </div>
 
           <div className="mt-6 flex flex-col">
@@ -310,60 +334,60 @@ const EmployeeLeadList = () => {
               <div className="inline-block min-w-full py-2 align-middle md:px-6 lg:px-8">
                 <div className="overflow-hidden border border-gray-200 md:rounded-lg">
                   <table className="min-w-full divide-y divide-gray-200">
-                    <thead className="bg-gray-50">
+                    <thead className="bg-gradient-to-r from-blue-400 to-indigo-400 text-white">
                       <tr>
                         <th
                           scope="col"
-                          className="px-4 py-3.5 text-sm font-normal text-gray-700"
+                          className="px-4 py-3.5 text-sm font-normal"
                         >
                           <span>S. NO.</span>
                         </th>
 
                         <th
                           scope="col"
-                          className="px-4 py-3.5 text-sm font-normal text-gray-700"
+                          className="px-4 py-3.5 text-sm font-normal"
                         >
                           <span>Client Name</span>
                         </th>
 
                         <th
                           scope="col"
-                          className="px-4 py-3.5 text-sm font-normal text-gray-700"
+                          className="px-4 py-3.5 text-sm font-normal"
                         >
                           <span>Phone no.</span>
                         </th>
 
                         <th
                           scope="col"
-                          className="px-4 py-3.5 text-sm font-normal text-gray-700"
+                          className="px-4 py-3.5 text-sm font-normal"
                         >
                           <span>Date of Assign</span>
                         </th>
 
                         <th
                           scope="col"
-                          className="px-4 py-3.5 text-sm font-normal text-gray-700"
+                          className="px-4 py-3.5 text-sm font-normal"
                         >
                           Status
                         </th>
 
                         <th
                           scope="col"
-                          className="px-4 py-3.5 text-sm font-normal text-gray-700"
+                          className="px-4 py-3.5 text-sm font-normal"
                         >
                           Last Status Update
                         </th>
 
                         <th
                           scope="col"
-                          className="px-4 py-3.5 text-sm font-normal text-gray-700 max-w-40"
+                          className="px-4 py-3.5 text-sm font-normal max-w-40"
                         >
                           Remark
                         </th>
 
                         <th
                           scope="col"
-                          className="px-x py-3.5 text-sm font-normal text-gray-700"
+                          className="px-x py-3.5 text-sm font-normal"
                         >
                           Manage Leads
                         </th>

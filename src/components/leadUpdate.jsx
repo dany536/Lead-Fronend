@@ -58,121 +58,123 @@ const LeadUpdate = () => {
 
     return (
         <>
-        <Header />
-        <Admin />
-            <form onSubmit={handleSubmit}>
-                <div className="bg-gray-100 p-10">
-                    <div className='max-w-5xl mx-auto bg-white rounded shadow-lg'>
-                        <div className="text-gray-600 text-center text-base md:text-3xl p-5 pb-0">
-                            <p className="font-medium">Update Lead Details</p>
-                        </div>
-                        <div className='grid md:grid-cols-2 grid-cols-1'>
-                            <div className="p-4 px-4 md:p-10 md:pt-5">
-                                <div className="grid gap-4 gap-y-2 text-sm grid-cols-1 md:grid-cols-5">
-                                    <div className="md:col-span-5">
-                                        <label htmlFor="full_name">Full Name</label>
-                                        <input type="text" name="name" value={lead.name} onChange={handleChange} id="full_name" className="h-10 border mt-1 rounded px-4 w-full bg-gray-50" />
-                                    </div>
-
-                                    <div className="md:col-span-5">
-                                        <label htmlFor="email">Email Address</label>
-                                        <input type="text" name="email" value={lead.email} onChange={handleChange} id="email" className="h-10 border mt-1 rounded px-4 w-full bg-gray-50" placeholder="email@domain.com" />
-                                    </div>
-
-                                    <div className="md:col-span-5">
-                                        <label htmlFor="phone">Mobile Number</label>
-                                        <input type="text" name="phone" value={lead.phone} onChange={handleChange} id="phone" className="h-10 border mt-1 rounded px-4 w-full bg-gray-50" />
-                                    </div>
-
-                                    <div className="md:col-span-5">
-                                        <label htmlFor="data_source">Data Source</label>
-                                        <input type="text" name="data_source" value={lead.data_source} onChange={handleChange} id="data_source" className="h-10 border mt-1 rounded px-4 w-full bg-gray-50" />
-                                    </div>
-
-                                    <div className="md:col-span-5">
-                                        <label htmlFor="project">Project</label>
-                                        <input type="text" name="project" value={lead.project} onChange={handleChange} id="project" className="h-10 border mt-1 rounded px-4 w-full bg-gray-50" />
-                                    </div>
-
-                                    <div className="md:col-span-5">
-                                        <label htmlFor="dateOfLead">Date of Lead</label>
-                                        <input type="date" name="dateOfLead" value={formatDate(lead.dateOfLead)} onChange={handleChange} id="dateOfLead" className="h-10 border mt-1 rounded px-4 w-full bg-gray-50" />
-                                    </div>
-
-                                </div>
+            <Header />
+            <div className='bg-gradient-to-tr from-blue-100 via-white to-green-100 min-h-screen p-4'>
+                <Admin />
+                <form onSubmit={handleSubmit}>
+                    <div className="p-5 md:p-10">
+                        <div className='max-w-5xl mx-auto bg-white rounded shadow-lg'>
+                            <div className="text-gray-600 text-center text-lg md:text-3xl p-5 pb-0">
+                                <p className="font-medium">Update Lead Details</p>
                             </div>
-                            <div className="p-4 px-4 md:p-10 md:pt-5">
-                                <div className="grid gap-4 gap-y-2 text-sm grid-cols-1 md:grid-cols-5">
-                                    <div className="md:col-span-5">
-                                        <label>Previous Assign</label>
-                                        <input value={lead.assignedTo ? lead.assignedTo.name : 'Not Assign'} id="assignedTo" className="h-10 border mt-1 rounded px-4 w-full bg-gray-50" />
-                                    </div>
+                            <div className='grid md:grid-cols-2 grid-cols-1'>
+                                <div className="p-4 px-4 md:p-10 md:pt-5">
+                                    <div className="grid gap-4 gap-y-2 text-sm grid-cols-1 md:grid-cols-5">
+                                        <div className="md:col-span-5">
+                                            <label htmlFor="full_name">Full Name</label>
+                                            <input type="text" name="name" value={lead.name} onChange={handleChange} id="full_name" className="h-10 border mt-1 rounded px-4 w-full bg-gray-50" />
+                                        </div>
 
-                                    <div className="md:col-span-5">
-                                        <label htmlFor="assignedTo">New Assign To</label>
-                                        <select
-                                            name="assignedTo"
-                                            value={lead.assignedTo ? lead.assignedTo.name : '--'}
-                                            onChange={handleChange}
-                                            id="assignedTo" className="h-10 border mt-1 rounded p-2 w-full bg-gray-50"
-                                        >
-                                            <option>Select One</option>
-                                            {
-                                                employee.map((employee) => (
-                                                    <option key={employee._id} value={employee._id}>{employee.name}</option>
-                                                ))
-                                            }
-                                        </select>
-                                        {/* <input type="text" name="assignedTo" value={lead.assignedTo ? lead.assignedTo.name : ''} onChange={handleChange} id="assignedTo" className="h-10 border mt-1 rounded px-4 w-full bg-gray-50" /> */}
-                                    </div>
+                                        <div className="md:col-span-5">
+                                            <label htmlFor="email">Email Address</label>
+                                            <input type="text" name="email" value={lead.email} onChange={handleChange} id="email" className="h-10 border mt-1 rounded px-4 w-full bg-gray-50" placeholder="email@domain.com" />
+                                        </div>
 
-                                    <div className="md:col-span-5">
-                                        <label htmlFor="lastAssignedDate">Date of Assign</label>
-                                        <input type="date" name="lastAssignedDate" value={formatDate(lead.lastAssignedDate)} onChange={handleChange} id="lastAssignedDate" className="h-10 border mt-1 rounded px-4 w-full bg-gray-50" />
-                                    </div>
+                                        <div className="md:col-span-5">
+                                            <label htmlFor="phone">Mobile Number</label>
+                                            <input type="text" name="phone" value={lead.phone} onChange={handleChange} id="phone" className="h-10 border mt-1 rounded px-4 w-full bg-gray-50" />
+                                        </div>
 
-                                    <div className="md:col-span-5">
-                                        <label htmlFor="status">Status</label>
-                                        <select
-                                            name="status"
-                                            value={lead.status}
-                                            onChange={handleChange}
-                                            id="status" className="h-10 border mt-1 rounded px-4 w-full bg-gray-50"
-                                        >
-                                            <option value="No Update">No Update</option>
-                                            <option value="Close">Close</option>
-                                            <option value="In Follow Up">In Follow Up</option>
-                                            <option value="Did Not Answer">Did Not Answer</option>
-                                            <option value="Not Interested">Not Interested</option>
-                                            <option value="Switched Off">Switched Off</option>
-                                            <option value="Broker">Broker</option>
-                                            <option value="Invalid Number">Invalid Number</option>
-                                            <option value="Spam">Spam</option>
-                                            <option value="Incoming Not Available">Incoming Not Available</option>
-                                            <option value="Busy">Busy</option>
-                                            <option value="Call Cut">Call Cut</option>
-                                            <option value="Meeting Done">Meeting Done</option>
-                                            <option value="Future Prospect">Future Prospect</option>
-                                        </select>
-                                    </div>
+                                        <div className="md:col-span-5">
+                                            <label htmlFor="data_source">Data Source</label>
+                                            <input type="text" name="data_source" value={lead.data_source} onChange={handleChange} id="data_source" className="h-10 border mt-1 rounded px-4 w-full bg-gray-50" />
+                                        </div>
 
-                                    <div className="md:col-span-5">
-                                        <label htmlFor="remark">Remarks</label>
-                                        <textarea rows="4" name='remark'  id='remark' value={lead.remark} onChange={handleChange} className="border mt-1 rounded p-3 w-full bg-gray-50" ></textarea>
-                                    </div>
+                                        <div className="md:col-span-5">
+                                            <label htmlFor="project">Project</label>
+                                            <input type="text" name="project" value={lead.project} onChange={handleChange} id="project" className="h-10 border mt-1 rounded px-4 w-full bg-gray-50" />
+                                        </div>
 
-                                    <div className="md:col-span-5 text-right pt-2">
-                                        <div className="inline-flex items-end gap-2">
-                                            <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"><Link to="/leadList">Back</Link></button>
-                                            <button type='submit' className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">{id ? 'Update' : 'Add'} Lead</button>
+                                        <div className="md:col-span-5">
+                                            <label htmlFor="dateOfLead">Date of Lead</label>
+                                            <input type="date" name="dateOfLead" value={formatDate(lead.dateOfLead)} onChange={handleChange} id="dateOfLead" className="h-10 border mt-1 rounded px-4 w-full bg-gray-50" />
+                                        </div>
+
+                                    </div>
+                                </div>
+                                <div className="p-4 px-4 md:p-10 md:pt-5">
+                                    <div className="grid gap-4 gap-y-2 text-sm grid-cols-1 md:grid-cols-5">
+                                        <div className="md:col-span-5">
+                                            <label>Previous Assign</label>
+                                            <input value={lead.assignedTo ? lead.assignedTo.name : 'Not Assign'} id="assignedTo" className="h-10 border mt-1 rounded px-4 w-full bg-gray-50" />
+                                        </div>
+
+                                        <div className="md:col-span-5">
+                                            <label htmlFor="assignedTo">New Assign To</label>
+                                            <select
+                                                name="assignedTo"
+                                                value={lead.assignedTo ? lead.assignedTo.name : '--'}
+                                                onChange={handleChange}
+                                                id="assignedTo" className="h-10 border mt-1 rounded p-2 w-full bg-gray-50"
+                                            >
+                                                <option>Select One</option>
+                                                {
+                                                    employee.map((employee) => (
+                                                        <option key={employee._id} value={employee._id}>{employee.name}</option>
+                                                    ))
+                                                }
+                                            </select>
+                                            {/* <input type="text" name="assignedTo" value={lead.assignedTo ? lead.assignedTo.name : ''} onChange={handleChange} id="assignedTo" className="h-10 border mt-1 rounded px-4 w-full bg-gray-50" /> */}
+                                        </div>
+
+                                        <div className="md:col-span-5">
+                                            <label htmlFor="lastAssignedDate">Date of Assign</label>
+                                            <input type="date" name="lastAssignedDate" value={formatDate(lead.lastAssignedDate)} onChange={handleChange} id="lastAssignedDate" className="h-10 border mt-1 rounded px-4 w-full bg-gray-50" />
+                                        </div>
+
+                                        <div className="md:col-span-5">
+                                            <label htmlFor="status">Status</label>
+                                            <select
+                                                name="status"
+                                                value={lead.status}
+                                                onChange={handleChange}
+                                                id="status" className="h-10 border mt-1 rounded px-4 w-full bg-gray-50"
+                                            >
+                                                <option value="No Update">No Update</option>
+                                                <option value="Close">Close</option>
+                                                <option value="In Follow Up">In Follow Up</option>
+                                                <option value="Did Not Answer">Did Not Answer</option>
+                                                <option value="Not Interested">Not Interested</option>
+                                                <option value="Switched Off">Switched Off</option>
+                                                <option value="Broker">Broker</option>
+                                                <option value="Invalid Number">Invalid Number</option>
+                                                <option value="Spam">Spam</option>
+                                                <option value="Incoming Not Available">Incoming Not Available</option>
+                                                <option value="Busy">Busy</option>
+                                                <option value="Call Cut">Call Cut</option>
+                                                <option value="Meeting Done">Meeting Done</option>
+                                                <option value="Future Prospect">Future Prospect</option>
+                                            </select>
+                                        </div>
+
+                                        <div className="md:col-span-5">
+                                            <label htmlFor="remark">Remarks</label>
+                                            <textarea rows="4" name='remark' id='remark' value={lead.remark} onChange={handleChange} className="border mt-1 rounded p-3 w-full bg-gray-50" ></textarea>
+                                        </div>
+
+                                        <div className="md:col-span-5 text-right pt-2">
+                                            <div className="inline-flex items-end gap-2">
+                                                <button className="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded"><Link to="/leadList">Back</Link></button>
+                                                <button type='submit' className="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded">{id ? 'Update' : 'Add'} Lead</button>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                </div>
-            </form>
+                </form>
+            </div>
 
         </>
     );

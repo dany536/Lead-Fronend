@@ -2,6 +2,8 @@ import React from 'react'
 import { Menu, X, ChevronDown, ChevronRight } from 'lucide-react';
 import { useCookies } from "react-cookie";
 import { useNavigate } from 'react-router-dom'
+import Logo from "../assets/logo.png";
+import '../app.css';
 
 
 export default function header() {
@@ -15,19 +17,20 @@ export default function header() {
     };
 
     return (
-        <div className="relative w-full bg-white">
-            <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-2 sm:px-6 lg:px-8">
-                <div className="inline-flex items-center space-x-2">
-                    <span className="font-bold">Vero Estate</span>
+        <div className="relative w-full bg-blue-300 text-gray-600">
+            <div className="mx-auto lg:flex max-w-7xl items-center justify-between py-2">
+                <div className="lg:-ml-16 flex items-center justify-center lg:justify-start">
+                    <img src={Logo} className='w-56 py-3'></img>
+                    {/* <span className="font-bold">Vero Estate</span> */}
                 </div>
-                <div className="grow flex-col items-center text-center flex">
-                    <h1 className='text-3xl p-3'>LEAD MANAGEMENT SYSTEM</h1>
+                <div className="text-center">
+                    <h1 className='lg:text-3xl text-2xl libre-bodoni'>LEAD MANAGEMENT SYSTEM</h1>
                 </div>
-                <div className="space-x-2">
+                <div className="flex items-center justify-center lg:justify-end">
                     <button
                         onClick={handleSignOut}
                         type="button"
-                        className="rounded-md bg-transparent px-3 py-2 text-sm font-semibold text-black hover:bg-black/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-black"
+                        className="rounded-md px-3 py-2 font-semibold hover:bg-white/40 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-black"
                     >
                         Sign Out
                     </button>

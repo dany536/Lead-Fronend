@@ -8,11 +8,13 @@ const API_BASE_URL = url;
 
 const EmployeeLeadDetails = () => {
   const [lead, setLead] = useState([]);
+  const [records, setRecords] = useState([]);
   const { id } = useParams();
 
   useEffect(() => {
     if (id) {
       fetchLead();
+      fetchLeadHistory();
     }
   }, [id]);
 
@@ -21,19 +23,28 @@ const EmployeeLeadDetails = () => {
     setLead(res.data);
   };
 
+  const fetchLeadHistory = async () => {
+    const res = await axios.get(`${API_BASE_URL}/leadHistory/${id}`);
+    setRecords(res.data);
+  };
+
   const navigate = useNavigate();
 
   const formatDate = (dateString) => {
     return dateString ? new Date(dateString).toLocaleDateString() : 'N/A';
   };
 
+  const filteredRecords = records.filter(
+    (record) => lead.assignedTo && record.employeeName === lead.assignedTo.name
+  );
+
   return (
     <>
       <Header />
-      <div className="bg-gray-300 p-10">
+      <div className='min-h-screen bg-gradient-to-tr from-blue-100 via-white to-green-100 p-10'>
 
         <div className='max-w-5xl mx-auto bg-white rounded shadow-lg'>
-          <div className="text-gray-600 text-center text-base md:text-3xl p-5 pb-0">
+          <div className="text-gray-600 text-center text-xl md:text-3xl p-5 pb-0">
             <p className="font-medium">Lead Details</p>
           </div>
           <div className='grid md:grid-cols-2 grid-cols-1'>
@@ -95,9 +106,120 @@ const EmployeeLeadDetails = () => {
                   </div>
 
                   <div className="md:col-span-5 text-right pt-2">
-                    <button onClick={() => navigate(-1)} className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Back</button>
+                    <button onClick={() => navigate(-1)} className="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded">Back</button>
                   </div>
 
+                </div>
+              </div>
+            </div>
+          </div>
+
+
+        </div>
+
+        <br />
+        <div className='max-w-7xl mx-auto bg-white rounded shadow-lg'>
+          <div className="text-gray-600 text-center text-lg md:text-3xl p-5 pb-0">
+            <p className="font-medium">Lead History</p>
+          </div>
+
+          <div className="flex flex-col">
+            <div className="overflow-x-auto">
+              <div className="inline-block min-w-full py-8 align-middle md:px-6 lg:px-8">
+
+                <div className="overflow-hidden border border-gray-200 md:rounded-lg">
+                  <table className="min-w-full table-fixed divide-y divide-gray-200">
+                    <thead className="bg-gradient-to-r from-blue-400 to-indigo-400 text-white">
+                      <tr>
+                        <th
+                          scope="col-1"
+                          className="px-4 py-3.5 text-sm font-normal"
+                        >
+                          <span>S. NO.</span>
+                        </th>
+
+                        <th
+                          scope="col-1"
+                          className="px-4 py-3.5 text-sm font-normal"
+                        >
+                          <span>Employee Name</span>
+                        </th>
+
+                        <th
+                          scope="col"
+                          className="px-4 py-3.5 text-sm font-normal"
+                        >
+                          <span>Date of Assign</span>
+
+                        </th>
+                        <th
+                          scope="col"
+                          className="px-4 py-3.5 text-sm font-normal"
+                        >
+                          <span>Last Status Update</span>
+                        </th>
+
+                        <th
+                          scope="col"
+                          className="px-4 py-3.5 text-sm font-normal"
+                        >
+                          Status
+                        </th>
+
+                        <th
+                          scope="col"
+                          className="px-4 py-3.5 text-sm font-normal"
+                        >
+                          Remark
+                        </th>
+
+                      </tr>
+                    </thead>
+
+                    <tbody className="divide-y divide-gray-200 bg-white text-center ">
+                      {filteredRecords.map((lead, index) => (
+                        <tr key={lead._id}>
+                          <td className="whitespace-nowrap px-4 py-4">
+                            <div className="text-sm font-medium text-gray-900">{index + 1}</div>
+                          </td>
+
+                          <td className="whitespace-nowrap px-4 py-4">
+                            <div className="text-sm font-medium text-gray-900">{lead.employeeName}</div>
+                          </td>
+
+                          <td className="whitespace-nowrap px-4 py-4">
+                            <div className="text-sm text-gray-900 ">{formatDate(lead.lastAssignedDate)}</div>
+                          </td>
+
+                          <td className="whitespace-nowrap px-4 py-4">
+                            <div className="text-sm text-gray-900 ">{formatDate(lead.lastStatusUpdate)}</div>
+                          </td>
+
+                          <td className="whitespace-nowrap px-4 py-4">
+                            <div className="text-sm font-medium text-gray-900">{lead.status}</div>
+                          </td>
+
+                          <td className="px-4 py-4 w-[520px] align-top">
+                            <div className="text-sm font-medium text-gray-900 whitespace-normal break-words">
+                              {lead.remark}
+                            </div>
+                          </td>
+
+                        </tr>
+                      ))}
+
+                      {filteredRecords.length === 0 && (
+                        <tr>
+                          <td colSpan="6" className="text-center py-4 text-gray-500">
+                            No lead history for the assigned employee.
+                          </td>
+                        </tr>
+                      )}
+
+                    </tbody>
+
+
+                  </table>
                 </div>
               </div>
             </div>

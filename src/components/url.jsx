@@ -1,9 +1,9 @@
 
 //url in development mode
-const url = "http://localhost:5000";
+//const url = "http://localhost:5000";
 
 //url in production mode
-//const url = "";
+const url = "";
 
 export default url;
 

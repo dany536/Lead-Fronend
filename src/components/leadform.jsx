@@ -54,7 +54,7 @@ const LeadForm = () => {
   return (
     <>
       <Header />
-      <div className='bg-gray-100'>
+      <div className='min-h-screen bg-gradient-to-tr from-blue-100 via-white to-green-100'>
         <Admin />
         <form onSubmit={handleSubmit}>
           <div class="min-h-screen pt-10 flex items-center justify-center">
@@ -125,8 +125,8 @@ const LeadForm = () => {
 
                         <div class="md:col-span-5 text-right pt-2">
                           <div class="inline-flex items-end gap-2">
-                            <button onClick={() => navigate(-1)} className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Back</button>
-                            <button type='submit' class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">{id ? 'Update' : 'Add'} Lead</button>
+                            <button onClick={() => navigate(-1)} className="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded">Back</button>
+                            <button type='submit' class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded">{id ? 'Update' : 'Add'} Lead</button>
                           </div>
                         </div>
 

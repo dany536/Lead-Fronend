@@ -14,7 +14,7 @@ import EmployeeLogin from './components/employeeLogin.jsx';
 import PersonalList from './components/personalLead/personalList.jsx';
 import AddPLead from './components/personalLead/addPLead.jsx';
 import UpdatePLead from './components/personalLead/updatePLead.jsx';
-
+import LeaderPannel from './components/leaderPannel.jsx';
 function App() {
 
   return (
@@ -42,6 +42,9 @@ function App() {
             <Route path="/personalList/:id" element={<PersonalList />} />
             <Route path="/addPLead/:id" element={<AddPLead />} />
             <Route path="/updatePLead/:id" element={<UpdatePLead />} />
+            <Route path="/leaderPannel/:id" element={<LeaderPannel />} />
+            
+            {/* Add other routes as needed */}
           </Routes>
         </div>
       </Router>

@@ -21,6 +21,7 @@ const EmployeeLeadList = () => {
   const [users, setUsers] = useState({
     name: "", id: ""
   });
+  const [team, setTeam] = useState([]);
   const navigate = useNavigate()
 
   const [leadSection, setLeadSection] = useState(true)
@@ -40,7 +41,6 @@ const EmployeeLeadList = () => {
     setNoUpdateSection(false)
     setDidNotAnsswerSection(false)
     setmeetingDoneSection(false)
-    // const bColor = 'orange'
   }
 
   const closefn = () => {
@@ -94,6 +94,7 @@ const EmployeeLeadList = () => {
   useEffect(() => {
     fetchLeads(id)
     fetchEmployee(id);
+    fetchTeamMember(id);
     // const Token = Cookies.get('accessToken');
     // if (!Token) {
     //   navigate('/')
@@ -124,6 +125,13 @@ const EmployeeLeadList = () => {
   const fetchEmployee = async (id) => {
     const res = await axios.get(`${API_BASE_URL}/employee/${id}`);
     setEmployee(res.data);
+    console.log(res.data)
+  };
+
+  const fetchTeamMember = async (id) => {
+    const res = await axios.get(`${API_BASE_URL}/leaderPannel/${id}`);
+    console.log("Team Member Data:", res.data);
+    setTeam(res.data);
     console.log(res.data)
   };
 
@@ -200,23 +208,36 @@ const EmployeeLeadList = () => {
     <>
       <Header />
 
-      <div className='bg-gray-300 min-h-screen'>
-        <section className="mx-auto w-full max-w-7xl md:px-4 py-4 md:mt-3">
+      <div className='min-h-screen bg-gradient-to-tr from-blue-100 via-white to-green-100 p-4'>
+        <section className="mx-auto w-full max-w-7xl md:px-4 md:py-4 md:mt-3">
 
           <div className="hidden md:flex space-y-2 flex-col md:flex-row items-center justify-between md:space-y-0">
             <div>
               <h2 className="text-2xl font-semibold">Lead Details</h2>
             </div>
             <div className='flex flex-row gap-5'>
-              <h2 className="text-xl font-semibold">Hi {employee.name}!</h2>
+              <h2 className="text-2xl font-semibold">Hi {employee.name}!</h2>
             </div>
-            <div>
+            <div className='flex flex-row gap-2 items-center'>
               <Link
                 type="button" to={`/personalList/${employee._id}`}
-                className="rounded-md bg-black px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-black/80 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-black"
+                className="rounded-md bg-gray-500 px-5 py-2 font-semibold text-white shadow-sm hover:bg-black/80 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-black"
               >
                 Switch to Personal
               </Link>
+
+              {team.length === 0 ? (
+                <div></div>
+              ) : (
+                <div>
+                  <Link
+                    type="button" to={`/leaderPannel/${employee._id}`}
+                    className="rounded-md bg-gray-500 px-10 py-2 font-semibold text-white shadow-sm hover:bg-black/80 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-black"
+                  >
+                    Leader Panel
+                  </Link>
+                </div>
+              )}
             </div>
           </div>
 
@@ -224,25 +245,36 @@ const EmployeeLeadList = () => {
             <div>
               <h2 className="text-2xl text-center font-semibold">Lead Details</h2>
             </div>
-            <div className="flex space-y-2 flex-row items-center justify-between md:space-y-0 px-5 pt-2">
-              <div className='flex flex-row gap-5'>
+            <div className="space-y-2 items-center">
+              <div className='text-center p-2'>
                 <h2 className="text-xl font-semibold">Hi {employee.name}!</h2>
               </div>
-              <div>
+              <div className='flex flex-row gap-5 justify-center items-center px-5'>
                 <Link
                   type="button" to={`/personalList/${employee._id}`}
-                  className="rounded-md bg-black px-2.5 py-1.5 text-sm font-semibold text-white shadow-sm hover:bg-black/80 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-black"
+                  className="rounded-md bg-gray-500 px-5 py-2 font-semibold text-white shadow-sm hover:bg-black/80 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-black"
                 >
                   Switch to Personal
                 </Link>
+                {team.length === 0 ? (
+                  <div></div>
+                ) : (
+                  <div>
+                    <Link
+                      type="button" to={`/leaderPannel/${employee._id}`}
+                      className="rounded-md bg-gray-500 px-10 py-2 font-semibold text-white shadow-sm hover:bg-black/80 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-black"
+                    >
+                      Leader Panel
+                    </Link>
+                  </div>
+                )}
               </div>
             </div>
 
           </div>
 
           <div className="grid grid-cols-2 md:grid-cols-6 gap-4 md:gap-4 max-w-7xl mx-auto pt-7 px-5">
-            {/* <button onClick={leadfn} className='border-2' style={{ borderColor: bColor }}> */}
-            <button onClick={leadfn}>
+            <button onClick={leadfn} className='bg-gradient-to-r from-white to-blue-400 rounded-xl'>
               <CardDataStats title="Total Leads" total={leads.length}>
                 <svg
                   className="fill-primary dark:fill-white"
@@ -264,7 +296,7 @@ const EmployeeLeadList = () => {
               </CardDataStats>
             </button>
 
-            <button onClick={closefn}>
+            <button onClick={closefn} className='bg-gradient-to-r from-white test rounded-xl'>
               <CardDataStats title="Leads Closed" total={closeLead.length} >
                 <svg
                   className="fill-primary dark:fill-white"
@@ -286,7 +318,7 @@ const EmployeeLeadList = () => {
               </CardDataStats>
             </button>
 
-            <button onClick={meetingDonefn}>
+            <button onClick={meetingDonefn} className='bg-gradient-to-r from-white to-yellow-400 rounded-xl'>
               <CardDataStats title="Meeting Done" total={meetingDoneLead.length} >
                 <svg
                   className="fill-primary dark:fill-white"
@@ -308,7 +340,7 @@ const EmployeeLeadList = () => {
               </CardDataStats>
             </button>
 
-            <button onClick={didNotAnswerfn}>
+            <button onClick={didNotAnswerfn} className='bg-gradient-to-r from-white to-red-400 rounded-xl'>
               <CardDataStats title="Did Not Answer" total={didNotAnswerLead.length} >
                 <svg
                   className="fill-primary dark:fill-white"
@@ -330,7 +362,7 @@ const EmployeeLeadList = () => {
               </CardDataStats>
             </button>
 
-            <button onClick={followUpfn}>
+            <button onClick={followUpfn} className='bg-gradient-to-r from-white to-purple-400 rounded-xl'>
               <CardDataStats title="In Follow Up" total={inFollowUpLead.length}>
                 <svg
                   className="fill-primary dark:fill-white"
@@ -352,7 +384,7 @@ const EmployeeLeadList = () => {
               </CardDataStats>
             </button>
 
-            <button onClick={noUpdatefn}>
+            <button onClick={noUpdatefn} className='bg-gradient-to-r from-white to-gray-400 rounded-xl'>
               <CardDataStats title="No Update" total={noUpdateLead.length}>
                 <svg
                   className="fill-primary dark:fill-white"
@@ -379,84 +411,66 @@ const EmployeeLeadList = () => {
             </button>
           </div>
 
-          {/* <div className='grid gap-4 max-w-5xl mx-auto pt-5'>
-            <PieChart
-              series={[
-                {
-                  outerRadius: 190,
-                  data,
-                  arcLabel: getArcLabel,
-                },
-              ]}
-              sx={{
-                [`& .${pieArcLabelClasses.root}`]: {
-                  fill: 'white',
-                  fontSize: 14,
-                },
-              }}
-              {...sizing}
-            />
-          </div> */}
 
           <div className="mt-6 flex flex-col">
             <div className="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
               <div className="inline-block min-w-full py-2 align-middle md:px-6 lg:px-8">
                 <div className="overflow-hidden border border-gray-200 md:rounded-lg">
                   <table className="min-w-full divide-y divide-gray-200">
-                    <thead className="bg-gray-50">
+                    <thead className="bg-gradient-to-r from-blue-400 to-indigo-400 text-white">
                       <tr>
                         <th
                           scope="col"
-                          className="px-4 py-3.5 text-sm font-normal text-gray-700"
+                          className="px-4 py-3.5 text-sm font-normal"
                         >
                           <span>S. NO.</span>
                         </th>
 
                         <th
                           scope="col"
-                          className="px-4 py-3.5 text-sm font-normal text-gray-700"
+                          className="px-4 py-3.5 text-sm font-normal"
                         >
                           <span>Client Name</span>
                         </th>
 
                         <th
                           scope="col"
-                          className="px-4 py-3.5 text-sm font-normal text-gray-700"
+                          className="px-4 py-3.5 text-sm font-normal"
                         >
                           <span>Phone no.</span>
                         </th>
 
                         <th
                           scope="col"
-                          className="px-4 py-3.5 text-sm font-normal text-gray-700"
+                          className="px-4 py-3.5 text-sm font-normal"
                         >
                           <span>Date of Assign</span>
                         </th>
 
                         <th
                           scope="col"
-                          className="px-4 py-3.5 text-sm font-normal text-gray-700"
+                          className="px-4 py-3.5 text-sm font-normal"
                         >
                           Status
                         </th>
 
                         <th
                           scope="col"
-                          className="px-4 py-3.5 text-sm font-normal text-gray-700"
+                          className="px-4 py-3.5 text-sm font-normal"
                         >
                           Last Status Update
                         </th>
 
                         <th
                           scope="col"
-                          className="px-4 py-3.5 text-sm font-normal text-gray-700"
+                          className="px-4 py-3.5 text-sm font-normal"
                         >
                           Remark
                         </th>
 
                         <th
                           scope="col"
-                          className="px-x py-3.5 text-sm font-normal text-gray-700"
+                          className="px-x py-3.5 text-sm font-normal"
                         >
                           Manage Leads
                         </th>
@@ -541,9 +555,9 @@ const EmployeeLeadList = () => {
                               </td>
 
                               <td className="whitespace-nowrap flex gap-1 px-4 py-4 text-sm text-gray-700 place-content-center">
-                                {/* <div className="text-sm text-gray-900 rounded-full bg-green-400 px-4 py-1">
+                                <div className="text-sm text-gray-900 rounded-full bg-green-400 px-4 py-1">
                                   <Link to={`/employeeLeadDetails/${lead._id}`}>View</Link>
-                                </div> */}
+                                </div>
                                 <div className="text-sm text-white rounded-full bg-orange-500 px-4 py-1">
                                   <Link to={`/employeeLeadUpdate/${lead._id}`}>Update</Link>
                                 </div>

@@ -35,9 +35,9 @@ const addPLead = () => {
     return (
         <>
             <Header />
-            <div className='bg-gray-100'>
+            <div className='min-h-screen bg-gradient-to-tr from-blue-100 via-white to-green-100 p-4'>
                 <form onSubmit={handleSubmit}>
-                    <div className="min-h-screen pt-10 flex items-center justify-center">
+                    <div className="min-h-screen flex items-center justify-center">
                         <div className="container max-w-screen-lg mx-auto">
                             <div>
                                 <div className="bg-white rounded shadow-lg p-4 px-4 md:p-8 mb-6">

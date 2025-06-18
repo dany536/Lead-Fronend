@@ -7,6 +7,8 @@ import CardDataStats from './CardDataStats';
 import Header from './header';
 import { jwtDecode } from "jwt-decode";
 import url from './url';
+import './leadList.css';
+
 // import Excelexport from './Excelexport.jsx';
 //import "core-js/stable/atob";
 import Chart from './chart';
@@ -179,6 +181,8 @@ const LeadList = () => {
     }))
   }
 
+  
+
   function lastUpdateFilter(data) {
     console.log(data);
     const deep = data.target.value
@@ -202,9 +206,11 @@ const LeadList = () => {
   }
 
   const statusColors = {
-    'Not Interested': 'bg-red-100 text-red-700',
-    'Call Cut': 'text-yellow-700',
-    'Broker': 'text-purple-700',
+    'Close': 'bg-green-100 text-green-700',
+    'In Follow Up': 'bg-purple-100 text-purple-700',
+    'Did Not Answer': 'bg-red-100 text-red-700',
+    'Meeting Done': 'bg-yellow-100 text-yellow-700',
+    'No Update': 'bg-gray-100 text-gray-700',
   };
 
   return (
@@ -236,7 +242,7 @@ const LeadList = () => {
             </CardDataStats>
           </button>
 
-          <button onClick={closefn} className='bg-gradient-to-r from-white to-red-400 rounded-xl'>
+          <button onClick={closefn} className='bg-gradient-to-r from-white test rounded-xl'>
             <CardDataStats title="Leads Closed" total={closeLead.length} >
               <svg
                 className="fill-primary dark:fill-white"
@@ -258,7 +264,7 @@ const LeadList = () => {
             </CardDataStats>
           </button>
 
-          <button onClick={meetingDonefn} className='bg-gradient-to-r from-white to-green-400 rounded-xl'>
+          <button onClick={meetingDonefn} className='bg-gradient-to-r from-white to-yellow-400 rounded-xl'>
             <CardDataStats title="Meeting Done" total={meetingDoneLead.length} >
               <svg
                 className="fill-primary dark:fill-white"
@@ -280,7 +286,7 @@ const LeadList = () => {
             </CardDataStats>
           </button>
 
-          <button onClick={didNotAnswerfn} className='bg-gradient-to-r from-white to-yellow-400 rounded-xl'>
+          <button onClick={didNotAnswerfn} className='bg-gradient-to-r from-white to-red-400 rounded-xl'>
             <CardDataStats title="Did Not Answer" total={didNotAnswerLead.length} >
               <svg
                 className="fill-primary dark:fill-white"
@@ -302,7 +308,7 @@ const LeadList = () => {
             </CardDataStats>
           </button>
 
-          <button onClick={followUpfn} className='bg-gradient-to-r from-white to-indigo-400 rounded-xl'>
+          <button onClick={followUpfn} className='bg-gradient-to-r from-white to-purple-400 rounded-xl'>
             <CardDataStats title="In Follow Up" total={inFollowUpLead.length}>
               <svg
                 className="fill-primary dark:fill-white"
@@ -393,7 +399,7 @@ const LeadList = () => {
             <div>
               <Link
                 type="button" to="/add"
-                className="rounded-md bg-black px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-black/80 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-black"
+                className="rounded-md bg-gray-700 px-14 py-2  font-semibold text-white shadow-sm hover:bg-black/80 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-black"
               >
                 Add New Lead
               </Link>

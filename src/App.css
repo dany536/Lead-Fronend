@@ -1,0 +1,18 @@
+
+
+.libre-bodoni {
+  font-family: "Libre Bodoni", serif;
+  font-optical-sizing: auto;
+  font-weight: 700;
+  font-style: normal;
+}
+
+
+.test{
+    background-color: #C7FF72;
+}
+
+.to-green-810 {
+    --tw-gradient-to: #C7FF72 var(--tw-gradient-to-position);
+}
+
